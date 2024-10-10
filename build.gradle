@@ -152,6 +152,9 @@ dependencies {
     modRuntimeOnly("dev.ftb.mods:ftb-library-forge:2001.2.4"){ transitive = false }
     modRuntimeOnly("dev.ftb.mods:ftb-teams-forge:2001.3.0"){ transitive = false }
 
+    // ftbu
+    modImplementation("dev.ftb.mods:ftb-ultimine-forge:2001.1.5"){ transitive = false }
+
 
     modRuntimeOnly("mezz.jei:jei-$project.minecraft_version-forge:$project.jei_version") { transitive = false }
 
