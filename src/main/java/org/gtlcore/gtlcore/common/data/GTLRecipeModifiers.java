@@ -13,7 +13,6 @@ import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiController;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiPart;
 import com.gregtechceu.gtceu.api.machine.multiblock.CoilWorkableElectricMultiblockMachine;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableElectricMultiblockMachine;
-import com.gregtechceu.gtceu.api.machine.trait.IRecipeHandlerTrait;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.OverclockingLogic;
 import com.gregtechceu.gtceu.api.recipe.RecipeHelper;
@@ -49,7 +48,8 @@ public class GTLRecipeModifiers {
             GTRecipe recipe1 = reduction(machine, recipe, (1.0 - coilMachine.getCoilTier() * 0.05) * 0.8, (1.0 - coilMachine.getCoilTier() * 0.05) * 0.6);
             if (recipe1 != null) {
                 recipe1 = GTRecipeModifiers.hatchParallel(machine, recipe1, false, params, result);
-                if (recipe1 != null) return RecipeHelper.applyOverclock(OverclockingLogic.PERFECT_OVERCLOCK_SUBTICK, recipe1, coilMachine.getOverclockVoltage(), params, result);
+                if (recipe1 != null)
+                    return RecipeHelper.applyOverclock(OverclockingLogic.PERFECT_OVERCLOCK_SUBTICK, recipe1, coilMachine.getOverclockVoltage(), params, result);
             }
         }
         return null;
@@ -61,8 +61,9 @@ public class GTLRecipeModifiers {
             GTRecipe recipe1 = reduction(machine, recipe, 0.9, 0.6);
             if (recipe1 != null) {
                 recipe1 = GTRecipeModifiers.accurateParallel(machine, recipe1, 4 * (workableElectricMultiblockMachine).getTier() - 1, false).getFirst();
-                if (recipe1 != null) return RecipeHelper.applyOverclock(OverclockingLogic.NON_PERFECT_OVERCLOCK_SUBTICK, recipe1,
-                        workableElectricMultiblockMachine.getOverclockVoltage(), params, result);
+                if (recipe1 != null)
+                    return RecipeHelper.applyOverclock(OverclockingLogic.NON_PERFECT_OVERCLOCK_SUBTICK, recipe1,
+                            workableElectricMultiblockMachine.getOverclockVoltage(), params, result);
             }
         }
         return null;
@@ -98,7 +99,7 @@ public class GTLRecipeModifiers {
             FluidStack fluidStack2 = FluidRecipeCapability.CAP.of(fluidList.get(1).getContent()).getStacks()[0];
             long a = 0, b = 0;
             for (IMultiPart part : workableElectricMultiblockMachine.getParts()) {
-                for (IRecipeHandlerTrait handler : part.getRecipeHandlers()) {
+                for (var handler : part.getRecipeHandlers()) {
                     if (handler.getHandlerIO() == IO.IN) {
                         for (Object contents : handler.getContents()) {
                             if (contents instanceof FluidStack fluidStack) {
@@ -114,7 +115,9 @@ public class GTLRecipeModifiers {
                 }
             }
             if (b == 0) return null;
-            GTRecipe recipe1 = RecipeHelper.applyOverclock(OverclockingLogic.NON_PERFECT_OVERCLOCK_SUBTICK, GTRecipeModifiers.hatchParallel(machine, recipe, false, params, result), workableElectricMultiblockMachine.getOverclockVoltage(), params, result);
+            GTRecipe hatchedParallel = GTRecipeModifiers.hatchParallel(machine, recipe, false, params, result);
+            if (hatchedParallel == null) return null;
+            GTRecipe recipe1 = RecipeHelper.applyOverclock(OverclockingLogic.NON_PERFECT_OVERCLOCK_SUBTICK, hatchedParallel, workableElectricMultiblockMachine.getOverclockVoltage(), params, result);
             if (a / b != fluidStack1.getAmount() / fluidStack2.getAmount()) {
                 recipe1.outputs.clear();
             }

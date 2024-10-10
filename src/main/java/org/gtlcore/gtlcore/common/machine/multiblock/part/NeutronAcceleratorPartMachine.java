@@ -44,7 +44,7 @@ public class NeutronAcceleratorPartMachine extends EnergyHatchPartMachine {
     }
 
     public long consumeEnergy() {
-        if (this.energyContainer.getEnergyStored() > 0) {
+        if (this.isWorkingEnabled() && this.energyContainer.getEnergyStored() > 0) {
             return Math.abs(this.energyContainer.changeEnergy(-getMaxEUConsume())) *
                     (10 + ThreadLocalRandom.current().nextInt(11));
         } else {

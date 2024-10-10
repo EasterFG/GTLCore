@@ -37,6 +37,7 @@ public class AdvancedAssemblyLineMachine extends WorkableElectricMultiblockMachi
     public static GTRecipe recipeModifier(MetaMachine machine, @NotNull GTRecipe recipe, OCParams params, OCResult result) {
         if (machine instanceof AdvancedAssemblyLineMachine lineMachine) {
             GTRecipe recipe1 = GTRecipeModifiers.hatchParallel(machine, recipe, false, params, result);
+            if (recipe1 == null) return null;
             recipe1.duration = Math.max(lineMachine.speed * recipe1.duration / 100, 1);
             return RecipeHelper.applyOverclock(OverclockingLogic.NON_PERFECT_OVERCLOCK,
                     recipe1, lineMachine.getOverclockVoltage(), params, result);
