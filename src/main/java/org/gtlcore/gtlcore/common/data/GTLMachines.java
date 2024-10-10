@@ -415,4 +415,12 @@ public class GTLMachines {
             .tooltipBuilder(GTL_ADD)
             .overlayTieredHullRenderer("neutron_sensor")
             .register();
+
+    public static final MachineDefinition ROTOR_HATCH = REGISTRATE
+            .machine("rotor_hatch", RotorHatchPartMachine::new)
+            .langValue("Rotor Hatch")
+            .tier(GTValues.EV)
+            .rotationState(RotationState.ALL)
+            .overlayTieredHullRenderer("rotor_hatch")
+            .register();
 }
