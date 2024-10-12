@@ -199,7 +199,7 @@ public class AdvancedMultiBlockMachine {
                             .or(Predicates.abilities(PartAbility.COMPUTATION_DATA_RECEPTION).setMaxGlobalLimited(1)))
                     .where("c", Predicates.blocks(GCyMBlocks.HEAT_VENT.get()))
                     .where("d", Predicates.blocks(Registries.getBlock("kubejs:neutronium_pipe_casing")))
-                    .where("e", Predicates.blocks(ChemicalHelper.getBlock(TagPrefix.frameGt, GTMaterials.Titanium)))
+                    .where("e", Predicates.blocks(ChemicalHelper.getBlock(TagPrefix.frameGt, GTLMaterials.BlackTitanium)))
                     .where("f", Predicates.blocks(GTLBlocks.EXTREME_STRENGTH_TRITANIUM_CASING.get()))
                     .build())
             .beforeWorking((machine, recipe) -> {
@@ -207,7 +207,7 @@ public class AdvancedMultiBlockMachine {
                 BlockPos pos = machine.self().getPos();
                 BlockPos[] coordinates = new BlockPos[] { pos.offset(4, 8, 0), pos.offset(-4, 8, 0), pos.offset(0, 8, 4), pos.offset(0, 8, -4) };
                 for (BlockPos a : coordinates) {
-                    if (level != null && Objects.equals(level.getBlockState(a).getBlock().kjs$getId(), "gtceu:black_titanium_frame")) {
+                    if (level != null && level.getBlockState(a).is(ChemicalHelper.getBlock(TagPrefix.frameGt, GTLMaterials.BlackTitanium))) {
                         for (int i = -6; i < 7; i++) {
                             for (int j = -6; j < 7; j++) {
                                 if (level.getBrightness(LightLayer.SKY, a.offset(0, 1, 0)) == 0) {
