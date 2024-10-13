@@ -1,6 +1,7 @@
 package org.gtlcore.gtlcore.mixin.ftbu;
 
 import appeng.block.AEBaseBlock;
+import appeng.block.networking.CableBusBlock;
 import dev.ftb.mods.ftbultimine.FTBUltiminePlayerData;
 import dev.ftb.mods.ftbultimine.shape.BlockMatcher;
 import org.spongepowered.asm.mixin.Mixin;
@@ -15,6 +16,6 @@ public class YouCantBreakAE2Mixin {
 
     @ModifyVariable(method = "updateBlocks", at = @At(value = "STORE", ordinal = 2), remap = false)
     public BlockMatcher modifyBlockMatcher(BlockMatcher matcher) {
-        return (original, state) -> !(state.getBlock() instanceof AEBaseBlock) && original.getBlock() == state.getBlock();
+        return (original, state) -> !(state.getBlock() instanceof CableBusBlock) && original.getBlock() == state.getBlock();
     }
 }
