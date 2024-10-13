@@ -225,7 +225,7 @@ public class GeneratorMachine {
                     .where("H", Predicates.blocks(GTLBlocks.HYPER_MECHANICAL_CASING.get()))
                     .where("J", Predicates.blocks(Registries.getBlock("kubejs:dyson_deployment_casing")))
                     .where("K", Predicates.blocks(Registries.getBlock("kubejs:adamantine_coil_block")))
-                    .where("L", Predicates.blocks(ChemicalHelper.getBlock(TagPrefix.frameGt, GTLMaterials.Adamantine)))
+                    .where("L", Predicates.blocks(ChemicalHelper.getBlock(TagPrefix.frameGt, GTLMaterials.Vibranium)))
                     .where("M", Predicates.blocks(GTLBlocks.HYPER_CORE.get()))
                     .where("N", Predicates.blocks(GTLBlocks.ECHO_CASING.get()))
                     .where("P", Predicates.blocks(Registries.getBlock("kubejs:dyson_deployment_magnet")))
