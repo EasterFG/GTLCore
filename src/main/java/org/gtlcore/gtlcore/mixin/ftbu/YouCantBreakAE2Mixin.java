@@ -1,6 +1,5 @@
 package org.gtlcore.gtlcore.mixin.ftbu;
 
-import appeng.block.AEBaseBlock;
 import appeng.block.networking.CableBusBlock;
 import dev.ftb.mods.ftbultimine.FTBUltiminePlayerData;
 import dev.ftb.mods.ftbultimine.shape.BlockMatcher;
