@@ -62,8 +62,11 @@ public class NeutronActivatorMachine extends NoEnergyMultiblockMachine {
     protected ConditionalSubscriptionHandler moderateSubs;
     protected ConditionalSubscriptionHandler absorptionSubs;
 
+    @Persisted
     private Set<NeutronSensorPartMachine> sensorMachines;
+    @Persisted
     private Set<ItemBusPartMachine> busMachines;
+    @Persisted
     private Set<NeutronAcceleratorPartMachine> acceleratorMachines;
 
     public NeutronActivatorMachine(IMachineBlockEntity holder, Object... args) {
