@@ -32,6 +32,8 @@ import java.util.function.Consumer;
 
 import static com.gregtechceu.gtceu.api.GTValues.*;
 import static com.gregtechceu.gtceu.api.data.tag.TagPrefix.*;
+import static com.gregtechceu.gtceu.common.data.GTItems.CONVEYOR_MODULE_EV;
+import static com.gregtechceu.gtceu.common.data.GTItems.COVER_ITEM_DETECTOR_ADVANCED;
 import static com.gregtechceu.gtceu.common.data.GTMaterials.*;
 import static com.gregtechceu.gtceu.common.data.GTRecipeTypes.ASSEMBLER_RECIPES;
 import static com.gregtechceu.gtceu.data.recipe.CraftingComponent.*;
@@ -71,8 +73,17 @@ public class MachineRecipe {
                 .outputItems(GTBlocks.MACHINE_CASING_MAX.asStack()).circuitMeta(8).duration(50)
                 .save(provider);
 
+        ASSEMBLER_RECIPES.recipeBuilder("rotor_hatch_a")
+                .inputItems(GTMachines.ITEM_IMPORT_BUS[EV], 1)
+                .inputItems(COVER_ITEM_DETECTOR_ADVANCED)
+                .inputItems(pipeLargeRestrictive, SterlingSilver, 4)
+                .inputItems(CONVEYOR_MODULE_EV, 16)
+                .inputFluids(Polyethylene.getFluid(L))
+                .outputItems(GTLMachines.ROTOR_HATCH)
+                .duration(400).EUt(480).save(provider);
+
         ASSEMBLER_RECIPES.recipeBuilder("hull_uhv").duration(50).EUt(16)
-                .inputItems(GTBlocks.MACHINE_CASING_UHV.asStack())
+                .inputItems(GTBlocks.MACHINE_CASING_UHV)
                 .inputItems(cableGtSingle, Europium, 2)
                 .inputFluids(GTLMaterials.Polyetheretherketone.getFluid(L * 2))
                 .outputItems(GTMachines.HULL[9]).save(provider);
