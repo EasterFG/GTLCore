@@ -13,7 +13,7 @@
       "item": "gtceu:uev_field_generator"
     },
     "C": {
-      "tag": "forge:circuits/uev"
+      "tag": "gtceu:circuits/uev"
     },
     "D": {
       "item": "gtceu:gravity_hatch"
