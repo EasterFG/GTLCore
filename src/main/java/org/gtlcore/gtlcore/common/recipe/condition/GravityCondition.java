@@ -1,7 +1,7 @@
 package org.gtlcore.gtlcore.common.recipe.condition;
 
 import org.gtlcore.gtlcore.common.data.GTLRecipeConditions;
-import org.gtlcore.gtlcore.common.machine.multiblock.part.GravityPartMachine;
+import org.gtlcore.gtlcore.common.machine.multiblock.part.maintenance.IGravityPartMachine;
 
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiPart;
@@ -60,7 +60,7 @@ public class GravityCondition extends RecipeCondition {
         MetaMachine machine = recipeLogic.getMachine();
         if (machine instanceof MultiblockControllerMachine controllerMachine) {
             for (IMultiPart part : controllerMachine.self().getParts()) {
-                if (part instanceof GravityPartMachine gravityPart) {
+                if (part instanceof IGravityPartMachine gravityPart) {
                     return gravityPart.getCurrentGravity() == (zero ? 0 : 100);
                 }
             }

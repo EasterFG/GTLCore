@@ -57,6 +57,7 @@
     "gtm.machine.SteamParallelMultiblockMachineMixin",
     "gtm.machine.WorkableTieredMachineMixin",
     "gtm.recipe.CraftingComponentMixin",
+    "gtm.recipe.FuelRecipesMixin",
     "gtm.recipe.GCyMRecipesMixin",
     "gtm.recipe.MaterialRecipeHandlerMixin",
     "gtm.recipe.OreRecipeHandlerMixin",

@@ -1,4 +1,4 @@
-package org.gtlcore.gtlcore.common.machine.multiblock.part;
+package org.gtlcore.gtlcore.common.machine.multiblock.part.maintenance;
 
 import com.gregtechceu.gtceu.api.gui.GuiTextures;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;

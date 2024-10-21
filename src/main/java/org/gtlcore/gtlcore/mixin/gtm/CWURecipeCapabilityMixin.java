@@ -1,6 +1,9 @@
 package org.gtlcore.gtlcore.mixin.gtm;
 
+import org.gtlcore.gtlcore.GTLCore;
+
 import com.gregtechceu.gtceu.api.capability.recipe.*;
+import com.gregtechceu.gtceu.api.machine.trait.NotifiableComputationContainer;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.content.IContentSerializer;
 
@@ -26,10 +29,9 @@ public abstract class CWURecipeCapabilityMixin extends RecipeCapability<Integer>
                 .stream()
                 .filter(handler -> !handler.isProxy()).toList();
         for (IRecipeHandler<?> container : recipeHandlerList) {
-            for (Object content : container.getContents()) {
-                if (content instanceof Integer integer) {
-                    maxCWU += integer;
-                }
+            GTLCore.LOGGER.info("container class is {}", container.getClass());
+            if (container instanceof NotifiableComputationContainer nc) {
+                maxCWU += nc.requestCWUt(Integer.MAX_VALUE, true);
             }
         }
         int recipeCWU = CWURecipeCapability.CAP.of(recipe.tickInputs.get(CWURecipeCapability.CAP).get(0).getContent());
