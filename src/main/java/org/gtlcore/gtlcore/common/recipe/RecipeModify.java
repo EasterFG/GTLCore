@@ -34,7 +34,8 @@ public class RecipeModify {
                     .save(provider);
         });
 
-        GTRecipeTypes.LASER_ENGRAVER_RECIPES.onRecipeBuild((recipeBuilder, provider) -> {
+        GTRecipeTypes.LASER_ENGRAVER_RECIPES.setMaxIOSize(2, 1, 2, 1).onRecipeBuild((recipeBuilder, provider) -> {
+            if (recipeBuilder.data.contains("special")) return;
             GTRecipeBuilder recipe = GTLRecipeTypes.DIMENSIONAL_FOCUS_ENGRAVING_ARRAY_RECIPES.copyFrom(recipeBuilder)
                     .duration((int) (recipeBuilder.duration * 0.2))
                     .EUt(recipeBuilder.EUt() * 4);

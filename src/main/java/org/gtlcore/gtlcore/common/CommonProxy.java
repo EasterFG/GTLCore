@@ -6,6 +6,7 @@ import org.gtlcore.gtlcore.common.data.machines.GeneratorMachine;
 import org.gtlcore.gtlcore.config.ConfigHolder;
 import org.gtlcore.gtlcore.integration.ae2.InfinityCellGuiHandler;
 import org.gtlcore.gtlcore.integration.ae2.storage.InfinityCellHandler;
+import org.gtlcore.gtlcore.network.GTLNetworkHandler;
 
 import com.gregtechceu.gtceu.api.GTCEuAPI;
 import com.gregtechceu.gtceu.api.data.chemical.material.event.MaterialEvent;
@@ -59,6 +60,7 @@ public class CommonProxy {
 
     public void postRegistrationInitialization() {
         GTLItems.InitUpgrades();
+        GTLNetworkHandler.INSTANCE.init();
     }
 
     private void clientSetup(final FMLClientSetupEvent event) {}

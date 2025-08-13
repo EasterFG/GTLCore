@@ -304,4 +304,59 @@ public class GTLItems {
     public static ItemEntry<Item> SHEWANELLA_PETRI_DISH = register("shewanella_petri_dish", false);
     public static ItemEntry<Item> CONVERSION_SIMULATE_CARD = register("conversion_simulate_card", true);
     public static ItemEntry<Item> FAST_CONVERSION_SIMULATE_CARD = register("fast_conversion_simulate_card", true);
+
+    public static ItemEntry<Item> COMPRESSED_PUFFERFISH = register("compressed_pufferfish", true);
+    public static ItemEntry<ComponentItem> MIRACLE_CRYSTAL = REGISTRATE
+            .item("miracle_crystal", ComponentItem::create)
+            .properties(stack -> stack.stacksTo(16))
+            .onRegister(attach(new TooltipBehavior(lines -> {
+                lines.add(Component.translatable("§d§l§o无人看见的角落里 奇迹正在酝酿发生"));
+            })))
+            .register();
+    public static ItemEntry<ComponentItem> MINING_CRYSTAL = REGISTRATE
+            .item("mining_crystal", ComponentItem::create)
+            .properties(stack -> stack.stacksTo(16))
+            .onRegister(attach(new TooltipBehavior(lines -> {
+                lines.add(Component.translatable("§8§l§o辛苦劳动换来的是 一颗颗璀璨的结晶"));
+            })))
+            .register();
+    public static ItemEntry<ComponentItem> TREASURES_CRYSTAL = REGISTRATE
+            .item("treasures_crystal", ComponentItem::create)
+            .properties(stack -> stack.stacksTo(16))
+            .onRegister(attach(new TooltipBehavior(lines -> {
+                lines.add(Component.translatable("§5§l§o某些平凡到极点的 或许是罕见的奇珍"));
+            })))
+            .register();
+    public static ItemEntry<ComponentItem> SUPER_GLUE = REGISTRATE
+            .item("super_glue", ComponentItem::create)
+            .properties(stack -> stack.stacksTo(16))
+            .onRegister(attach(new TooltipBehavior(lines -> {
+                lines.add(Component.translatable("§d§l§o宛如神迹般的连结"));
+                lines.add(Component.translatable("§d§l§o由§r§8█████§d§l§o出品"));
+            })))
+            .register();
+    public static ItemEntry<ComponentItem> ULTIMATE_TEA = REGISTRATE
+            .item("ultimate_tea", ComponentItem::create)
+            .properties(stack -> stack.stacksTo(16))
+            .onRegister(attach(new TooltipBehavior(lines -> {
+                lines.add(Component.translatable("§6§l§o休息一下吧"));
+            })))
+            .register();
+
+    public static ItemEntry<Item> WORLD_FRAGMENTS_OVERWORLD = register("world_fragments_overworld", true);
+    public static ItemEntry<Item> WORLD_FRAGMENTS_NETHER = register("world_fragments_nether", true);
+    public static ItemEntry<Item> WORLD_FRAGMENTS_END = register("world_fragments_end", true);
+    public static ItemEntry<Item> WORLD_FRAGMENTS_REACTOR = register("world_fragments_reactor", true);
+    public static ItemEntry<Item> WORLD_FRAGMENTS_MOON = register("world_fragments_moon", true);
+    public static ItemEntry<Item> WORLD_FRAGMENTS_MARS = register("world_fragments_mars", true);
+    public static ItemEntry<Item> WORLD_FRAGMENTS_VENUS = register("world_fragments_venus", true);
+    public static ItemEntry<Item> WORLD_FRAGMENTS_MERCURY = register("world_fragments_mercury", true);
+    public static ItemEntry<Item> WORLD_FRAGMENTS_CERES = register("world_fragments_ceres", true);
+    public static ItemEntry<Item> WORLD_FRAGMENTS_IO = register("world_fragments_io", true);
+    public static ItemEntry<Item> WORLD_FRAGMENTS_GANYMEDE = register("world_fragments_ganymede", true);
+    public static ItemEntry<Item> WORLD_FRAGMENTS_PLUTO = register("world_fragments_pluto", true);
+    public static ItemEntry<Item> WORLD_FRAGMENTS_ENCELADUS = register("world_fragments_enceladus", true);
+    public static ItemEntry<Item> WORLD_FRAGMENTS_TITAN = register("world_fragments_titan", true);
+    public static ItemEntry<Item> WORLD_FRAGMENTS_GLACIO = register("world_fragments_glacio", true);
+    public static ItemEntry<Item> WORLD_FRAGMENTS_BARNARDA = register("world_fragments_barnarda", true);
 }

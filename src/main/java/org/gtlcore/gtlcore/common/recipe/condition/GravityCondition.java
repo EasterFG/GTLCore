@@ -2,6 +2,7 @@ package org.gtlcore.gtlcore.common.recipe.condition;
 
 import org.gtlcore.gtlcore.common.data.GTLRecipeConditions;
 import org.gtlcore.gtlcore.common.machine.multiblock.part.maintenance.IGravityPartMachine;
+import org.gtlcore.gtlcore.config.ConfigHolder;
 
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiPart;
@@ -11,6 +12,7 @@ import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.RecipeCondition;
 import com.gregtechceu.gtceu.api.recipe.condition.RecipeConditionType;
 
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.GsonHelper;
@@ -45,6 +47,19 @@ public class GravityCondition extends RecipeCondition {
         this.zero = zero;
     }
 
+    private int heightThreshold = 313; // 默认值表示无高度限制
+
+    public GravityCondition(boolean zero, int heightThreshold) {
+        this.zero = zero;
+        this.heightThreshold = heightThreshold;
+    }
+
+    public GravityCondition(boolean isReverse, boolean zero, int heightThreshold) {
+        super(isReverse);
+        this.zero = zero;
+        this.heightThreshold = heightThreshold;
+    }
+
     @Override
     public RecipeConditionType<?> getType() {
         return GTLRecipeConditions.GRAVITY;
@@ -65,13 +80,35 @@ public class GravityCondition extends RecipeCondition {
                 }
             }
         }
-        Level level = Objects.requireNonNull(recipeLogic.getMachine().getLevel());
-        return level.kjs$getDimension().toString().contains("_orbit") && zero;
+
+        Level level = Objects.requireNonNull(machine.getLevel(), "Machine level cannot be null");
+        BlockPos machinePos = machine.getPos(); // 使用getPos()方法获取机器位置
+
+        String dimensionName = level.dimension().location().toString();
+
+        // 检查是否为_orbit维度
+        boolean isInOrbitDimension = dimensionName.contains("_orbit");
+        // _orbit维度的原有逻辑保持不变
+        if (isInOrbitDimension && zero) {
+            return true;
+        }
+
+        // 检查是否开启空岛模式
+        if (ConfigHolder.INSTANCE.enableSkyBlokeMode) {
+            // 检查是否为主世界并且高度超过阈值
+            boolean isInOverworld = dimensionName.equals("minecraft:overworld"); // 确认主世界的标识符
+            boolean exceedsHeightThreshold = machinePos.getY() >= heightThreshold;
+            // 主世界的高度条件检查
+            if (isInOverworld && exceedsHeightThreshold && zero) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
     public RecipeCondition createTemplate() {
-        return new GravityCondition();
+        return new GravityCondition(false, 313); // 或者使用其他默认值
     }
 
     @NotNull
@@ -79,6 +116,7 @@ public class GravityCondition extends RecipeCondition {
     public JsonObject serialize() {
         JsonObject config = super.serialize();
         config.addProperty("gravity", zero);
+        config.addProperty("height_threshold", heightThreshold);
         return config;
     }
 
@@ -86,6 +124,7 @@ public class GravityCondition extends RecipeCondition {
     public RecipeCondition deserialize(@NotNull JsonObject config) {
         super.deserialize(config);
         zero = GsonHelper.getAsBoolean(config, "gravity", false);
+        heightThreshold = GsonHelper.getAsInt(config, "height_threshold", 313);
         return this;
     }
 
@@ -93,6 +132,7 @@ public class GravityCondition extends RecipeCondition {
     public RecipeCondition fromNetwork(FriendlyByteBuf buf) {
         super.fromNetwork(buf);
         zero = buf.readBoolean();
+        heightThreshold = buf.readInt();
         return this;
     }
 
@@ -100,5 +140,6 @@ public class GravityCondition extends RecipeCondition {
     public void toNetwork(FriendlyByteBuf buf) {
         super.toNetwork(buf);
         buf.writeBoolean(zero);
+        buf.writeInt(heightThreshold);
     }
 }

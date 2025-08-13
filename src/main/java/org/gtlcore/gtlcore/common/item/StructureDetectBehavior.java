@@ -1,6 +1,7 @@
 package org.gtlcore.gtlcore.common.item;
 
-import org.gtlcore.gtlcore.client.renderer.BlockHighlightHandler;
+import org.gtlcore.gtlcore.network.GTLNetworkHandler;
+import org.gtlcore.gtlcore.network.packet.SStructureDetectHighlight;
 
 import com.gregtechceu.gtceu.api.item.component.IInteractionItem;
 import com.gregtechceu.gtceu.api.item.tool.behavior.IToolBehavior;
@@ -18,6 +19,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -143,6 +145,7 @@ public class StructureDetectBehavior extends TooltipBehavior implements IToolBeh
             }
         }
         show.forEach(player::sendSystemMessage);
-        BlockHighlightHandler.highlight(error.getPos(), error.getWorld().dimension(), System.currentTimeMillis() + 15000);
+        GTLNetworkHandler.INSTANCE.sendTo(new SStructureDetectHighlight(error.getPos(), error.getWorld().dimension(),
+                System.currentTimeMillis() + 15000), (ServerPlayer) player);
     }
 }

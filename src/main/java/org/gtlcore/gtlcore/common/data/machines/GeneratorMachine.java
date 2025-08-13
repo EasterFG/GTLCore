@@ -531,7 +531,7 @@ public class GeneratorMachine {
                     .aisle(AnnihilateGeneratorA.A_109)
                     .where("~", Predicates.controller(Predicates.blocks(definition.get())))
                     .where("A", Predicates.blocks(GTLBlocks.GRAVITON_FIELD_CONSTRAINT_CASING.get()))
-                    .where("B", Predicates.blocks(GTLBlocks.HYPER_CORE.get()))
+                    .where("B", Predicates.blocks(Registries.getBlock("kubejs:annihilate_core")))
                     .where("C", Predicates.blocks(GTLBlocks.HYPER_MECHANICAL_CASING.get()))
                     .where("D", Predicates.blocks(Registries.getBlock("kubejs:hollow_casing")))
                     .where("E", Predicates.blocks(GTLBlocks.NAQUADAH_ALLOY_CASING.get()))

@@ -3830,6 +3830,14 @@ public class MaterialBuilder {
                 .flags(DISABLE_DECOMPOSITION)
                 .buildAndRegister();
 
+        PromethiumOxide = new Material.Builder(GTCEu.id("promethium_oxide"))
+                .dust()
+                .color(0xcfcfcf)
+                .components(Promethium, 2, Oxygen, 3)
+                .iconSet(GLASS)
+                .flags(DISABLE_DECOMPOSITION)
+                .buildAndRegister();
+
         ZirconChlorinatingResidue = new Material.Builder(GTCEu.id("zircon_chlorinating_residue"))
                 .fluid()
                 .color(0x33ca33)
@@ -5535,14 +5543,6 @@ public class MaterialBuilder {
                 .iconSet(GTLMaterialIconSet.BRIGHT)
                 .buildAndRegister();
 
-        PromethiumOxide = new Material.Builder(GTCEu.id("promethium_oxide"))
-                .dust()
-                .color(0xcfcfcf)
-                .components(Promethium, 2, Oxygen, 3)
-                .iconSet(GLASS)
-                .flags(DISABLE_DECOMPOSITION)
-                .buildAndRegister();
-
         CarbonTetrachloride = new Material.Builder(GTCEu.id("carbon_tetrachloride"))
                 .fluid()
                 .color(0x0E9000)
@@ -5555,5 +5555,313 @@ public class MaterialBuilder {
                 .color(0xcfcfcf)
                 .iconSet(GLASS)
                 .buildAndRegister().setFormula("Ac(CO₂)₄");
+
+        EthylHexanol = new Material.Builder(GTCEu.id("ethyl_hexanol"))
+                .fluid()
+                .components(Carbon, 8, Hydrogen, 18, Oxygen, 1)
+                .color(0xFFFFCC)
+                .iconSet(GTLMaterialIconSet.LIMPID)
+                .buildAndRegister();
+
+        P507 = new Material.Builder(GTCEu.id("p507"))
+                .fluid()
+                .components(Carbon, 18, Hydrogen, 36, Phosphorus, 1, Oxygen, 3)
+                .color(0xFFFF00)
+                .iconSet(GTLMaterialIconSet.LIMPID)
+                .flags(DISABLE_DECOMPOSITION)
+                .buildAndRegister();
+
+        LanthanumExtractionNanoResin = new Material.Builder(
+                GTCEu.id("lanthanum_extraction_nano_resin"))
+                .fluid()
+                .color(0x808080)
+                .iconSet(GTLMaterialIconSet.LIMPID)
+                .flags(DISABLE_DECOMPOSITION)
+                .buildAndRegister();
+
+        CeriumExtractionNanoResin = new Material.Builder(
+                GTCEu.id("cerium_extraction_nano_resin"))
+                .fluid()
+                .color(0x969696)
+                .iconSet(GTLMaterialIconSet.LIMPID)
+                .flags(DISABLE_DECOMPOSITION)
+                .buildAndRegister();
+
+        PraseodymiumExtractionNanoResin = new Material.Builder(
+                GTCEu.id("praseodymium_extraction_nano_resin"))
+                .fluid()
+                .color(0xA0A0A0)
+                .iconSet(GTLMaterialIconSet.LIMPID)
+                .flags(DISABLE_DECOMPOSITION)
+                .buildAndRegister();
+
+        NeodymiumExtractionNanoResin = new Material.Builder(
+                GTCEu.id("neodymium_extraction_nano_resin"))
+                .fluid()
+                .color(0xB0B0B0)
+                .iconSet(GTLMaterialIconSet.LIMPID)
+                .flags(DISABLE_DECOMPOSITION)
+                .buildAndRegister();
+
+        PromethiumExtractionNanoResin = new Material.Builder(
+                GTCEu.id("promethium_extraction_nano_resin"))
+                .fluid()
+                .color(0xC0C0C0)
+                .iconSet(GTLMaterialIconSet.LIMPID)
+                .flags(DISABLE_DECOMPOSITION)
+                .buildAndRegister();
+
+        SamariumExtractionNanoResin = new Material.Builder(
+                GTCEu.id("samarium_extraction_nano_resin"))
+                .fluid()
+                .color(0xD0D0D0)
+                .iconSet(GTLMaterialIconSet.LIMPID)
+                .flags(DISABLE_DECOMPOSITION)
+                .buildAndRegister();
+
+        EuropiumExtractionNanoResin = new Material.Builder(
+                GTCEu.id("europium_extraction_nano_resin"))
+                .fluid()
+                .color(0xE0E0E0)
+                .iconSet(GTLMaterialIconSet.LIMPID)
+                .flags(DISABLE_DECOMPOSITION)
+                .buildAndRegister();
+
+        GadoliniumExtractionNanoResin = new Material.Builder(
+                GTCEu.id("gadolinium_extraction_nano_resin"))
+                .fluid()
+                .color(0xF0F0F0)
+                .iconSet(GTLMaterialIconSet.LIMPID)
+                .flags(DISABLE_DECOMPOSITION)
+                .buildAndRegister();
+
+        TerbiumExtractionNanoResin = new Material.Builder(
+                GTCEu.id("terbium_extraction_nano_resin"))
+                .fluid()
+                .color(0x0080FF)
+                .iconSet(GTLMaterialIconSet.LIMPID)
+                .flags(DISABLE_DECOMPOSITION)
+                .buildAndRegister();
+
+        DysprosiumExtractionNanoResin = new Material.Builder(
+                GTCEu.id("dysprosium_extraction_nano_resin"))
+                .fluid()
+                .color(0x00FFFF)
+                .iconSet(GTLMaterialIconSet.LIMPID)
+                .flags(DISABLE_DECOMPOSITION)
+                .buildAndRegister();
+
+        HolmiumExtractionNanoResin = new Material.Builder(
+                GTCEu.id("holmium_extraction_nano_resin"))
+                .fluid()
+                .color(0x00FF00)
+                .iconSet(GTLMaterialIconSet.LIMPID)
+                .flags(DISABLE_DECOMPOSITION)
+                .buildAndRegister();
+
+        ErbiumExtractionNanoResin = new Material.Builder(
+                GTCEu.id("erbium_extraction_nano_resin"))
+                .fluid()
+                .color(0xFF00FF)
+                .iconSet(GTLMaterialIconSet.LIMPID)
+                .flags(DISABLE_DECOMPOSITION)
+                .buildAndRegister();
+
+        ThuliumExtractionNanoResin = new Material.Builder(
+                GTCEu.id("thulium_extraction_nano_resin"))
+                .fluid()
+                .color(0xFF0000)
+                .iconSet(GTLMaterialIconSet.LIMPID)
+                .flags(DISABLE_DECOMPOSITION)
+                .buildAndRegister();
+
+        YtterbiumExtractionNanoResin = new Material.Builder(
+                GTCEu.id("ytterbium_extraction_nano_resin"))
+                .fluid()
+                .color(0xFFFF00)
+                .iconSet(GTLMaterialIconSet.LIMPID)
+                .flags(DISABLE_DECOMPOSITION)
+                .buildAndRegister();
+
+        LutetiumExtractionNanoResin = new Material.Builder(
+                GTCEu.id("lutetium_extraction_nano_resin"))
+                .fluid()
+                .color(0x800080)
+                .iconSet(GTLMaterialIconSet.LIMPID)
+                .flags(DISABLE_DECOMPOSITION)
+                .buildAndRegister();
+
+        ScandiumExtractionNanoResin = new Material.Builder(
+                GTCEu.id("scandium_extraction_nano_resin"))
+                .fluid()
+                .color(0x808000)
+                .iconSet(GTLMaterialIconSet.LIMPID)
+                .flags(DISABLE_DECOMPOSITION)
+                .buildAndRegister();
+
+        YttriumExtractionNanoResin = new Material.Builder(
+                GTCEu.id("yttrium_extraction_nano_resin"))
+                .fluid()
+                .color(0x008000)
+                .iconSet(GTLMaterialIconSet.LIMPID)
+                .flags(DISABLE_DECOMPOSITION)
+                .buildAndRegister();
+
+        LanthanumExtractedNanoResin = new Material.Builder(
+                GTCEu.id("lanthanum_extracted_nano_resin"))
+                .fluid()
+                .color(0x808080)
+                .iconSet(GTLMaterialIconSet.LIMPID)
+                .flags(DISABLE_DECOMPOSITION)
+                .buildAndRegister();
+
+        CeriumExtractedNanoResin = new Material.Builder(
+                GTCEu.id("cerium_extracted_nano_resin"))
+                .fluid()
+                .color(0x969696)
+                .iconSet(GTLMaterialIconSet.LIMPID)
+                .flags(DISABLE_DECOMPOSITION)
+                .buildAndRegister();
+
+        PraseodymiumExtractedNanoResin = new Material.Builder(
+                GTCEu.id("praseodymium_extracted_nano_resin"))
+                .fluid()
+                .color(0xA0A0A0)
+                .iconSet(GTLMaterialIconSet.LIMPID)
+                .flags(DISABLE_DECOMPOSITION)
+                .buildAndRegister();
+
+        NeodymiumExtractedNanoResin = new Material.Builder(
+                GTCEu.id("neodymium_extracted_nano_resin"))
+                .fluid()
+                .color(0xB0B0B0)
+                .iconSet(GTLMaterialIconSet.LIMPID)
+                .flags(DISABLE_DECOMPOSITION)
+                .buildAndRegister();
+
+        PromethiumExtractedNanoResin = new Material.Builder(
+                GTCEu.id("promethium_extracted_nano_resin"))
+                .fluid()
+                .color(0xC0C0C0)
+                .iconSet(GTLMaterialIconSet.LIMPID)
+                .flags(DISABLE_DECOMPOSITION)
+                .buildAndRegister();
+
+        SamariumExtractedNanoResin = new Material.Builder(
+                GTCEu.id("samarium_extracted_nano_resin"))
+                .fluid()
+                .color(0xD0D0D0)
+                .iconSet(GTLMaterialIconSet.LIMPID)
+                .flags(DISABLE_DECOMPOSITION)
+                .buildAndRegister();
+
+        EuropiumExtractedNanoResin = new Material.Builder(
+                GTCEu.id("europium_extracted_nano_resin"))
+                .fluid()
+                .color(0xE0E0E0)
+                .iconSet(GTLMaterialIconSet.LIMPID)
+                .flags(DISABLE_DECOMPOSITION)
+                .buildAndRegister();
+
+        GadoliniumExtractedNanoResin = new Material.Builder(
+                GTCEu.id("gadolinium_extracted_nano_resin"))
+                .fluid()
+                .color(0xF0F0F0)
+                .iconSet(GTLMaterialIconSet.LIMPID)
+                .flags(DISABLE_DECOMPOSITION)
+                .buildAndRegister();
+
+        TerbiumExtractedNanoResin = new Material.Builder(
+                GTCEu.id("terbium_extracted_nano_resin"))
+                .fluid()
+                .color(0x0080FF)
+                .iconSet(GTLMaterialIconSet.LIMPID)
+                .flags(DISABLE_DECOMPOSITION)
+                .buildAndRegister();
+
+        DysprosiumExtractedNanoResin = new Material.Builder(
+                GTCEu.id("dysprosium_extracted_nano_resin"))
+                .fluid()
+                .color(0x00FFFF)
+                .iconSet(GTLMaterialIconSet.LIMPID)
+                .flags(DISABLE_DECOMPOSITION)
+                .buildAndRegister();
+
+        HolmiumExtractedNanoResin = new Material.Builder(
+                GTCEu.id("holmium_extracted_nano_resin"))
+                .fluid()
+                .color(0x00FF00)
+                .iconSet(GTLMaterialIconSet.LIMPID)
+                .flags(DISABLE_DECOMPOSITION)
+                .buildAndRegister();
+
+        ErbiumExtractedNanoResin = new Material.Builder(
+                GTCEu.id("erbium_extracted_nano_resin"))
+                .fluid()
+                .color(0xFF00FF)
+                .iconSet(GTLMaterialIconSet.LIMPID)
+                .flags(DISABLE_DECOMPOSITION)
+                .buildAndRegister();
+
+        ThuliumExtractedNanoResin = new Material.Builder(
+                GTCEu.id("thulium_extracted_nano_resin"))
+                .fluid()
+                .color(0xFF0000)
+                .iconSet(GTLMaterialIconSet.LIMPID)
+                .flags(DISABLE_DECOMPOSITION)
+                .buildAndRegister();
+
+        YtterbiumExtractedNanoResin = new Material.Builder(
+                GTCEu.id("ytterbium_extracted_nano_resin"))
+                .fluid()
+                .color(0xFFFF00)
+                .iconSet(GTLMaterialIconSet.LIMPID)
+                .flags(DISABLE_DECOMPOSITION)
+                .buildAndRegister();
+
+        LutetiumExtractedNanoResin = new Material.Builder(
+                GTCEu.id("lutetium_extracted_nano_resin"))
+                .fluid()
+                .color(0x800080)
+                .iconSet(GTLMaterialIconSet.LIMPID)
+                .flags(DISABLE_DECOMPOSITION)
+                .buildAndRegister();
+
+        ScandiumExtractedNanoResin = new Material.Builder(
+                GTCEu.id("scandium_extracted_nano_resin"))
+                .fluid()
+                .color(0x808000)
+                .iconSet(GTLMaterialIconSet.LIMPID)
+                .flags(DISABLE_DECOMPOSITION)
+                .buildAndRegister();
+
+        YttriumExtractedNanoResin = new Material.Builder(
+                GTCEu.id("yttrium_extracted_nano_resin"))
+                .fluid()
+                .color(0x008000)
+                .iconSet(GTLMaterialIconSet.LIMPID)
+                .flags(DISABLE_DECOMPOSITION)
+                .buildAndRegister();
+
+        MiracleGas = new Material.Builder(
+                GTCEu.id("miracle_gas"))
+                .gas()
+                .color(0xea8bd6)
+                .flags(DISABLE_DECOMPOSITION)
+                .buildAndRegister();
+
+        Miracle = new Material.Builder(
+                GTCEu.id("miracle"))
+                .fluid()
+                .color(0xea8bd6)
+                .flags(DISABLE_DECOMPOSITION)
+                .buildAndRegister();
+
+        MiracleAdhesive = new Material.Builder(
+                GTCEu.id("miracle_adhesive"))
+                .fluid()
+                .color(0xefb5f1)
+                .flags(DISABLE_DECOMPOSITION)
+                .buildAndRegister();
     }
 }

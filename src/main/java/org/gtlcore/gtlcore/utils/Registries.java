@@ -2,10 +2,12 @@ package org.gtlcore.gtlcore.utils;
 
 import org.gtlcore.gtlcore.GTLCore;
 
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.material.Fluid;
@@ -47,5 +49,10 @@ public class Registries {
             return Fluids.WATER;
         }
         return f;
+    }
+
+    public static ResourceKey<Level> getDimension(String s) {
+        return ResourceKey.create(net.minecraft.core.registries.Registries.DIMENSION,
+                new ResourceLocation(s));
     }
 }

@@ -30,7 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.gregtechceu.gtceu.common.data.GTRecipeTypes.*;
-import static com.lowdragmc.lowdraglib.gui.texture.ProgressTexture.FillDirection.LEFT_TO_RIGHT;
+import static com.lowdragmc.lowdraglib.gui.texture.ProgressTexture.FillDirection.*;
 
 public class GTLRecipeTypes {
 
@@ -247,7 +247,7 @@ public class GTLRecipeTypes {
 
     public static final GTRecipeType WORLD_DATA_SCANNER_RECIPES = register("world_data_scanner", ELECTRIC)
             .setEUIO(IO.IN)
-            .setMaxIOSize(2, 1, 2, 0)
+            .setMaxIOSize(3, 1, 2, 0)
             .setProgressBar(GuiTextures.PROGRESS_BAR_ARROW, LEFT_TO_RIGHT)
             .setSound(GTSoundEntries.SCIENCE);
 
@@ -687,6 +687,13 @@ public class GTLRecipeTypes {
             .setMaxIOSize(0, 1, 1, 1)
             .setProgressBar(GuiTextures.PROGRESS_BAR_ARROW, LEFT_TO_RIGHT)
             .setSound(GTSoundEntries.MIXER);
+
+    public static final GTRecipeType FRAGMENT_WORLD_COLLECTION = register("fragment_world_collection", MULTIBLOCK)
+            .setEUIO(IO.IN)
+            .setMaxIOSize(3, 12, 1, 1)
+            .setMaxTooltips(1)
+            .setProgressBar(GuiTextures.PROGRESS_BAR_MACERATE, LEFT_TO_RIGHT)
+            .setSound(GTSoundEntries.MINER);
 
     public static void init() {
         RecipeModify.init();

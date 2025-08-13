@@ -244,4 +244,34 @@ public class MultiBlockMachineB {
                             GTCEu.id("block/multiblock/gcym/large_extractor"))
                     .register() :
             null;
+
+    public final static MultiblockMachineDefinition LARGE_FRAGMENT_WORLD_COLLECTION_MACHINE = ConfigHolder.INSTANCE.enableSkyBlokeMode ?
+            REGISTRATE.multiblock("large_fragment_world_collection_machine", WorkableElectricMultiblockMachine::new)
+                    .langValue("Large fragment world collection machine")
+                    .tooltips(Component.literal("空岛模式特供"))
+                    .tooltips(Component.literal("耗能倍数：256"))
+                    .tooltips(Component.literal("耗时倍数：0.25"))
+                    .tooltips(Component.literal("最大并行数64"))
+                    .tooltipBuilder(GTLMachines.GTL_ADD)
+                    .recipeModifiers(
+                            (machine, recipe, params, result) -> GTLRecipeModifiers.reduction(machine, recipe, 256, 0.25),
+                            (machine, recipe, params, result) -> GTRecipeModifiers.accurateParallel(machine, recipe, 64, false).getFirst())
+                    .rotationState(RotationState.ALL)
+                    .recipeType(GTLRecipeTypes.FRAGMENT_WORLD_COLLECTION)
+                    .appearanceBlock(GTBlocks.CASING_TITANIUM_STABLE)
+                    .pattern(definition -> FactoryBlockPattern.start()
+                            .aisle("AAA", "AXA", "XXX", "XXX", "XXX", "AXA", "AAA")
+                            .aisle("AOA", "XXX", "XXX", "XXX", "XXX", "XXX", "AIA")
+                            .aisle("AAA", "AXA", "XXX", "XSX", "XXX", "AXA", "AAA")
+                            .where('S', Predicates.controller(Predicates.blocks(definition.get())))
+                            .where('X', Predicates.blocks(GTBlocks.CASING_TITANIUM_STABLE.get())
+                                    .or(Predicates.abilities(PartAbility.INPUT_ENERGY).setExactLimit(1)))
+                            .where('I', Predicates.abilities(PartAbility.IMPORT_ITEMS))
+                            .where('O', Predicates.abilities(PartAbility.EXPORT_ITEMS))
+                            .where('A', Predicates.any())
+                            .build())
+                    .workableCasingRenderer(GTCEu.id("block/casings/solid/machine_casing_stable_titanium"),
+                            GTCEu.id("block/multiblock/gcym/large_extractor"))
+                    .register() :
+            null;
 }

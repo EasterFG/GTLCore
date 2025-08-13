@@ -1408,6 +1408,7 @@ public class MultiBlockMachineA {
     public final static MultiblockMachineDefinition MEGA_DISTILLERY = REGISTRATE.multiblock("mega_distillery", WorkableElectricParallelHatchMultipleRecipesMachine::new)
             .rotationState(RotationState.NON_Y_AXIS)
             .allowExtendedFacing(false)
+            .recipeType(GTRecipeTypes.DISTILLERY_RECIPES)
             .recipeType(GTRecipeTypes.DISTILLATION_RECIPES)
             .recipeType(GTRecipeTypes.EVAPORATION_RECIPES)
             .tooltips(Component.translatable("gtceu.multiblock.laser.tooltip"))

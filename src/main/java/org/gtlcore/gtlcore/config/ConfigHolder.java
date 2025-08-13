@@ -24,7 +24,7 @@ public class ConfigHolder {
     @Configurable
     public boolean disableDrift = true;
     @Configurable
-    public boolean enablePrimitiveVoidOre = false;
+    public boolean enableSkyBlokeMode = false;
     @Configurable
     @Configurable.Range(min = 1)
     public int oreMultiplier = 4;
@@ -44,6 +44,8 @@ public class ConfigHolder {
     @Configurable.Comment({ "更大的数值会让界面显示有问题，推荐在样板管理终端管理" })
     @Configurable.Range(min = 36, max = 360)
     public int exPatternProvider = 36;
+    @Configurable
+    public boolean enablePrimitiveVoidOre = false;
     @Configurable
     @Configurable.Comment("连锁黑名单,支持通配符*")
     @Configurable.Synchronized

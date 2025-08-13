@@ -775,6 +775,46 @@ public class GTLMaterials {
     public static Material CarbonTetrachloride;
     public static Material ActiniumOxalate;
 
+    public static Material EthylHexanol;
+    public static Material P507;
+    public static Material LanthanumExtractionNanoResin;
+    public static Material CeriumExtractionNanoResin;
+    public static Material PraseodymiumExtractionNanoResin;
+    public static Material NeodymiumExtractionNanoResin;
+    public static Material PromethiumExtractionNanoResin;
+    public static Material SamariumExtractionNanoResin;
+    public static Material EuropiumExtractionNanoResin;
+    public static Material GadoliniumExtractionNanoResin;
+    public static Material TerbiumExtractionNanoResin;
+    public static Material DysprosiumExtractionNanoResin;
+    public static Material HolmiumExtractionNanoResin;
+    public static Material ErbiumExtractionNanoResin;
+    public static Material ThuliumExtractionNanoResin;
+    public static Material YtterbiumExtractionNanoResin;
+    public static Material LutetiumExtractionNanoResin;
+    public static Material ScandiumExtractionNanoResin;
+    public static Material YttriumExtractionNanoResin;
+    public static Material LanthanumExtractedNanoResin;
+    public static Material CeriumExtractedNanoResin;
+    public static Material PraseodymiumExtractedNanoResin;
+    public static Material NeodymiumExtractedNanoResin;
+    public static Material PromethiumExtractedNanoResin;
+    public static Material SamariumExtractedNanoResin;
+    public static Material EuropiumExtractedNanoResin;
+    public static Material GadoliniumExtractedNanoResin;
+    public static Material TerbiumExtractedNanoResin;
+    public static Material DysprosiumExtractedNanoResin;
+    public static Material HolmiumExtractedNanoResin;
+    public static Material ErbiumExtractedNanoResin;
+    public static Material ThuliumExtractedNanoResin;
+    public static Material YtterbiumExtractedNanoResin;
+    public static Material LutetiumExtractedNanoResin;
+    public static Material ScandiumExtractedNanoResin;
+    public static Material YttriumExtractedNanoResin;
+    public static Material MiracleGas;
+    public static Material Miracle;
+    public static Material MiracleAdhesive;
+
     public static void init() {
         MaterialAdd.init();
         MaterialBuilder.init();
