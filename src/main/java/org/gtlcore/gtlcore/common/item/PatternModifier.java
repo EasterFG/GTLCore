@@ -1,7 +1,9 @@
 package org.gtlcore.gtlcore.common.item;
 
 import org.gtlcore.gtlcore.api.item.tool.ae2.patternTool.Ae2BaseProcessingPattern;
+import org.gtlcore.gtlcore.common.machine.multiblock.part.ae.MEPatternBufferPartMachine;
 
+import com.gregtechceu.gtceu.api.blockentity.MetaMachineBlockEntity;
 import com.gregtechceu.gtceu.api.gui.GuiTextures;
 import com.gregtechceu.gtceu.api.item.component.IItemUIFactory;
 import com.gregtechceu.gtceu.integration.ae2.gui.widget.AETextInputButtonWidget;
@@ -28,12 +30,10 @@ import net.minecraft.world.phys.Vec3;
 
 import appeng.api.inventories.InternalInventory;
 import appeng.api.parts.IPart;
-import appeng.blockentity.crafting.PatternProviderBlockEntity;
 import appeng.blockentity.networking.CableBusBlockEntity;
-import appeng.parts.crafting.PatternProviderPart;
+import appeng.helpers.patternprovider.PatternProviderLogicHost;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import lombok.Setter;
-
-import java.util.HashMap;
 
 @Setter
 public class PatternModifier implements IItemUIFactory {
@@ -57,23 +57,23 @@ public class PatternModifier implements IItemUIFactory {
                         .addWidget(new AETextInputButtonWidget(120, 46 + 4, 72, 12)
                                 .setText(String.valueOf(Ae2PatternGeneratorScale))
                                 .setOnConfirm(this::setAe2PatternGeneratorScale)
-                                .setButtonTooltips(Component.literal("设置模板乘数")))
+                                .setButtonTooltips(Component.translatable("tooltip.gtlcore.pattern_multiplier_scale")))
                         .addWidget(new AETextInputButtonWidget(120, 60 + 4, 72, 12)
                                 .setText(String.valueOf(Ae2PatternGeneratorDivScale))
                                 .setOnConfirm(this::setAe2PatternGeneratorDivScale)
-                                .setButtonTooltips(Component.literal("设置模板除数")))
+                                .setButtonTooltips(Component.translatable("tooltip.gtlcore.pattern_divider_scale")))
                         .addWidget(new AETextInputButtonWidget(120, 74 + 4, 72, 12)
                                 .setText(String.valueOf(Ae2PatternGeneratorMaxItemStack))
                                 .setOnConfirm(this::setAe2PatternGeneratorMaxItemStack)
-                                .setButtonTooltips(Component.literal("设置乘法后最大物品/个")))
+                                .setButtonTooltips(Component.translatable("tooltip.gtlcore.pattern_max_item_stack")))
                         .addWidget(new AETextInputButtonWidget(120, 88 + 4, 72, 12)
                                 .setText(String.valueOf(Ae2PatternGeneratorMaxFluidStack))
                                 .setOnConfirm(this::setAe2PatternGeneratorMaxFluidStack)
-                                .setButtonTooltips(Component.literal("设置乘法后最大流体/桶")))
+                                .setButtonTooltips(Component.translatable("tooltip.gtlcore.pattern_max_fluid_stack")))
                         .addWidget(new AETextInputButtonWidget(120, 102 + 4, 72, 12)
                                 .setText(String.valueOf(Ae2PatternGeneratorAppliedNumber))
                                 .setOnConfirm(this::setAe2PatternGeneratorAppliedNumber)
-                                .setButtonTooltips(Component.literal("一次使用的应用次数(<=16)"))))
+                                .setButtonTooltips(Component.translatable("tooltip.gtlcore.pattern_applied_number"))))
                 .background(GuiTextures.BACKGROUND);
     }
 
@@ -82,11 +82,11 @@ public class PatternModifier implements IItemUIFactory {
     }
 
     private void setAe2PatternGeneratorMaxFluidStack(String s) {
-        Ae2PatternGeneratorMaxFluidStack = Integer.parseInt(s);
+        Ae2PatternGeneratorMaxFluidStack = Long.parseLong(s);
     }
 
     private void setAe2PatternGeneratorMaxItemStack(String s) {
-        Ae2PatternGeneratorMaxItemStack = Integer.parseInt(s);
+        Ae2PatternGeneratorMaxItemStack = Long.parseLong(s);
     }
 
     private void setAe2PatternGeneratorDivScale(String s) {
@@ -123,38 +123,43 @@ public class PatternModifier implements IItemUIFactory {
                     // 计算具体点击位置
                     Vec3 hitInBlock = new Vec3(hitVec.x - (double) pos.getX(), hitVec.y - (double) pos.getY(), hitVec.z - (double) pos.getZ());
                     IPart part = cable.getCableBus().selectPartLocal(hitInBlock).part;
-                    internalInventory = (part instanceof PatternProviderPart providerPart) ?
+                    internalInventory = (part instanceof PatternProviderLogicHost providerPart) ?
                             providerPart.getLogic().getPatternInv() : null;
+
+                } else if (tile instanceof PatternProviderLogicHost providerBlock) {
+                    internalInventory = providerBlock.getLogic().getPatternInv();
+                } else if (tile instanceof MetaMachineBlockEntity mmbe && mmbe.getMetaMachine() instanceof MEPatternBufferPartMachine me) {
+                    internalInventory = me.getTerminalPatternInventory();
                 } else {
-                    internalInventory = (tile instanceof PatternProviderBlockEntity providerBlock) ?
-                            providerBlock.getLogic().getPatternInv() : null;
+                    internalInventory = null;
                 }
 
                 if (internalInventory == null) {
-                    serverPlayer.displayClientMessage(Component.literal("只能对着样板供应器使用")
+                    serverPlayer.displayClientMessage(Component.translatable("message.gtlcore.pattern_provider_only")
                             .withStyle(), true);
                     return InteractionResult.FAIL;
                 }
 
                 for (int i = 0; i < Ae2PatternGeneratorAppliedNumber; ++i) {
-                    HashMap<Integer, ItemStack> newItemStackHashMap = new HashMap<>();
+                    var newItemStackHashMap = new Int2ObjectOpenHashMap<ItemStack>();
                     for (int slot = 0; slot < internalInventory.size(); slot++) {
                         ItemStack itemStack = internalInventory.getStackInSlot(slot);
                         if (!itemStack.isEmpty()) {
                             ItemStack patternItemStack = getNewPatternItemStack(serverPlayer, itemStack);
                             newItemStackHashMap.put(slot, patternItemStack);
                         }
-
                     }
-                    newItemStackHashMap.forEach((slot, itemStack) -> {
+                    newItemStackHashMap.int2ObjectEntrySet().fastForEach((entry) -> {
+                        int slot = entry.getIntKey();
+                        var itemStack = entry.getValue();
                         internalInventory.extractItem(slot, 1, false);
                         internalInventory.insertItem(slot, itemStack, false);
                     });
                 }
-                serverPlayer.displayClientMessage(Component.literal("已更新内部的样板，应用了%s次".formatted(Ae2PatternGeneratorAppliedNumber)), true);
+                serverPlayer.displayClientMessage(Component.translatable("message.gtlcore.pattern_updated", Ae2PatternGeneratorAppliedNumber), true);
             }
             if (!serverPlayer.isShiftKeyDown()) {
-                serverPlayer.displayClientMessage(Component.literal("右键空气打开GUI"), true);
+                serverPlayer.displayClientMessage(Component.translatable("message.gtlcore.right_click_air_gui"), true);
             }
         }
         return InteractionResult.SUCCESS;

@@ -2,37 +2,62 @@ package org.gtlcore.gtlcore.mixin.ae2.gui;
 
 import org.gtlcore.gtlcore.client.gui.PatterEncodingTermMenuModify;
 
+import com.gregtechceu.gtceu.common.data.GTItems;
+
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.ItemStack;
 
+import appeng.api.config.Actionable;
+import appeng.api.crafting.PatternDetailsHelper;
+import appeng.api.stacks.AEItemKey;
 import appeng.api.stacks.GenericStack;
 import appeng.api.storage.ITerminalHost;
+import appeng.core.definitions.AEItems;
 import appeng.helpers.IMenuCraftingPacket;
 import appeng.helpers.IPatternTerminalMenuHost;
 import appeng.menu.me.common.MEStorageMenu;
 import appeng.menu.me.items.PatternEncodingTermMenu;
+import appeng.menu.slot.RestrictedInputSlot;
 import appeng.util.ConfigInventory;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
+import com.google.common.math.LongMath;
+import org.jetbrains.annotations.Nullable;
+import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
  * @author EasterFG on 2024/9/12
  */
-@Mixin(PatternEncodingTermMenu.class)
+@Mixin(value = PatternEncodingTermMenu.class, priority = 900)
 public abstract class PatternEncodingTermMenuMixin extends MEStorageMenu implements IMenuCraftingPacket, PatterEncodingTermMenuModify {
+
+    @Unique
+    private static final ItemStack Pattern = AEItems.BLANK_PATTERN.stack();
 
     @Shadow(remap = false)
     @Final
     private ConfigInventory encodedInputsInv;
-
     @Shadow(remap = false)
     @Final
     private ConfigInventory encodedOutputsInv;
+    @Shadow(remap = false)
+    @Final
+    private RestrictedInputSlot blankPatternSlot;
+    @Shadow(remap = false)
+    @Final
+    private RestrictedInputSlot encodedPatternSlot;
+
+    @Shadow(remap = false)
+    protected abstract @Nullable ItemStack encodePattern();
+
+    @Shadow(remap = false)
+    protected abstract boolean isPattern(ItemStack output);
+
+    @Shadow(remap = false)
+    protected abstract void clearPattern();
 
     public PatternEncodingTermMenuMixin(MenuType<?> menuType, int id, Inventory ip, ITerminalHost host) {
         super(menuType, id, ip, host);
@@ -44,6 +69,67 @@ public abstract class PatternEncodingTermMenuMixin extends MEStorageMenu impleme
     public void initHooks(MenuType<?> menuType, int id, Inventory ip, IPatternTerminalMenuHost host, boolean bindInventory, CallbackInfo ci) {
         this.registerClientAction("modifyPatter", Integer.class,
                 this::gTLCore$modifyPatter);
+    }
+
+    /**
+     * @author .
+     * @reason 样板不足时自动填充(如果库存有)
+     */
+    @Overwrite(remap = false)
+    public void encode() {
+        if (isClientSide()) {
+            sendClientAction("encode");
+            return;
+        }
+
+        ItemStack encodedPattern = encodePattern();
+        if (encodedPattern != null) {
+            var encodeOutput = this.encodedPatternSlot.getItem();
+
+            // first check the output slots, should either be null, or a pattern (encoded or otherwise)
+            if (!encodeOutput.isEmpty() && !PatternDetailsHelper.isEncodedPattern(encodeOutput) && !AEItems.BLANK_PATTERN.isSameAs(encodeOutput)) {
+                return;
+            } // if nothing is there we should snag a new pattern.
+            else if (encodeOutput.isEmpty()) {
+                var blankPattern = this.blankPatternSlot.getItem();
+                if (!isPattern(blankPattern)) {
+                    return; // no blanks.
+                }
+
+                // remove one, and clear the input slot.
+                blankPattern.shrink(1);
+                if (blankPattern.getCount() <= 0) {
+                    if (this.storage != null) {
+                        long extract = this.storage.extract(AEItemKey.of(Pattern), 64, Actionable.SIMULATE, this.getActionSource());
+                        if (extract > 0) {
+                            extract = this.storage.extract(AEItemKey.of(Pattern), extract, Actionable.MODULATE, this.getActionSource());
+                            this.blankPatternSlot.set(Pattern.copyWithCount((int) extract));
+                        }
+                    } else this.blankPatternSlot.set(ItemStack.EMPTY);
+                }
+            }
+
+            this.encodedPatternSlot.set(encodedPattern);
+        } else {
+            clearPattern();
+        }
+    }
+
+    @Redirect(method = "encodeProcessingPattern",
+              at = @At(value = "INVOKE",
+                       target = "Lappeng/util/ConfigInventory;getStack(I)Lappeng/api/stacks/GenericStack;",
+                       ordinal = 0),
+              remap = false)
+    private GenericStack filterData(ConfigInventory instance, int slot) {
+        var stack = instance.getStack(slot);
+        if (stack != null && stack.what() instanceof AEItemKey aeItemKey) {
+            if (aeItemKey.hasTag() &&
+                    (aeItemKey.getItem() == GTItems.TOOL_DATA_STICK.asItem() ||
+                            aeItemKey.getItem() == GTItems.TOOL_DATA_ORB.asItem() ||
+                            aeItemKey.getItem() == GTItems.TOOL_DATA_MODULE.asItem()))
+                return new GenericStack(AEItemKey.of(aeItemKey.getItem()), stack.amount());
+        }
+        return stack;
     }
 
     @Override
@@ -85,10 +171,11 @@ public abstract class PatternEncodingTermMenuMixin extends MEStorageMenu impleme
             GenericStack stack = inv.getStack(slot);
             if (stack != null) {
                 if (flag) {
-                    if (data * stack.amount() > Integer.MAX_VALUE) {
+                    long modify = LongMath.saturatedMultiply(data, stack.amount());
+                    if (modify == Long.MAX_VALUE || modify == Long.MIN_VALUE) {
                         return null;
                     } else {
-                        result[slot] = new GenericStack(stack.what(), data * stack.amount());
+                        result[slot] = new GenericStack(stack.what(), modify);
                     }
                 } else {
                     if (stack.amount() % data != 0) {

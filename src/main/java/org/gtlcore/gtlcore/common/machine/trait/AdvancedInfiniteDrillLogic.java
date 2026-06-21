@@ -3,7 +3,6 @@ package org.gtlcore.gtlcore.common.machine.trait;
 import org.gtlcore.gtlcore.common.machine.multiblock.electric.AdvancedInfiniteDrillMachine;
 
 import com.gregtechceu.gtceu.api.GTValues;
-import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.data.worldgen.bedrockfluid.BedrockFluidVeinSavedData;
 import com.gregtechceu.gtceu.api.data.worldgen.bedrockfluid.FluidVeinWorldEntry;
 import com.gregtechceu.gtceu.api.machine.feature.IRecipeLogicMachine;
@@ -26,6 +25,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static org.gtlcore.gtlcore.api.recipe.RecipeRunnerHelper.*;
 
 /**
  * @author EasterFG on 2024/10/27
@@ -70,7 +71,7 @@ public class AdvancedInfiniteDrillLogic extends RecipeLogic {
             var match = getFluidDrillRecipe();
             if (match != null) {
                 var copied = match.copy(new ContentModifier(match.duration, 0));
-                if (match.matchRecipe(this.machine).isSuccess() && copied.matchTickRecipe(this.machine).isSuccess()) {
+                if (matchRecipe(this.machine, match) && copied.matchTickRecipe(this.machine).isSuccess()) {
                     setupRecipe(match);
                 }
             }
@@ -89,7 +90,7 @@ public class AdvancedInfiniteDrillLogic extends RecipeLogic {
                             .toArray(FluidStack[]::new))
                     .buildRawRecipe();
             recipe = recipe.copy(ContentModifier.multiplier(getMachine().getRate()), false);
-            if (recipe.matchRecipe(getMachine()).isSuccess() && recipe.matchTickRecipe(getMachine()).isSuccess()) {
+            if (matchRecipe(getMachine(), recipe) && recipe.matchTickRecipe(getMachine()).isSuccess()) {
                 return recipe;
             }
         }
@@ -135,16 +136,12 @@ public class AdvancedInfiniteDrillLogic extends RecipeLogic {
 
     @Override
     public void onRecipeFinish() {
-        machine.afterWorking();
-        if (lastRecipe != null) {
-            lastRecipe.postWorking(this.machine);
-            lastRecipe.handleRecipeIO(IO.OUT, this.machine, this.chanceCaches);
-        }
+        if (lastRecipe != null) handleRecipeOutput(this.machine, lastRecipe);
         // try it again
         var match = getFluidDrillRecipe();
         if (match != null) {
             var copied = match.copy(new ContentModifier(match.duration, 0));
-            if (match.matchRecipe(this.machine).isSuccess() && copied.matchTickRecipe(this.machine).isSuccess()) {
+            if (matchRecipe(this.machine, match) && copied.matchTickRecipe(this.machine).isSuccess()) {
                 setupRecipe(match);
                 return;
             }

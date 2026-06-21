@@ -8,6 +8,24 @@ import static net.minecraft.ChatFormatting.*;
 
 public class TextUtil {
 
+    public static final ChatFormatting[] GTL_CORE$VC = {
+            DARK_GRAY,
+            GRAY,
+            AQUA,
+            GOLD,
+            DARK_PURPLE,
+            BLUE,
+            LIGHT_PURPLE,
+            RED,
+            DARK_AQUA,
+            DARK_RED,
+            GREEN,
+            DARK_GREEN,
+            YELLOW,
+            BLUE,
+            RED
+    };
+
     public static String formatting(String input, ChatFormatting[] colours, double delay) {
         StringBuilder sb = new StringBuilder(input.length() * 3);
         if (delay <= 0.0D)

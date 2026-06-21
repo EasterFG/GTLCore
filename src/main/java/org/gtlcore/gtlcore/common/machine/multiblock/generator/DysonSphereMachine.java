@@ -108,7 +108,7 @@ public class DysonSphereMachine extends WorkableElectricMultiblockMachine {
             }
         }
         if (recipe != null && isLaunch(recipe)) {
-            return getDysonSphereData() < 10000;
+            return getDysonSphereData() <= 10000;
         } else {
             return getDysonSphereData() > 0;
         }

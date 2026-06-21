@@ -5,7 +5,11 @@ import org.gtlcore.gtlcore.common.data.*;
 import org.gtlcore.gtlcore.common.data.machines.GeneratorMachine;
 import org.gtlcore.gtlcore.config.ConfigHolder;
 import org.gtlcore.gtlcore.integration.ae2.InfinityCellGuiHandler;
+import org.gtlcore.gtlcore.integration.ae2.storage.FastInfinityCellHandler;
 import org.gtlcore.gtlcore.integration.ae2.storage.InfinityCellHandler;
+import org.gtlcore.gtlcore.integration.ae2.wireless.GTLWirelessAeContent;
+import org.gtlcore.gtlcore.integration.ae2.wireless.WirelessAeNetworkRuntime;
+import org.gtlcore.gtlcore.integration.ae2.wireless.WirelessAePackets;
 
 import com.gregtechceu.gtceu.api.GTCEuAPI;
 import com.gregtechceu.gtceu.api.data.chemical.material.event.MaterialEvent;
@@ -16,6 +20,7 @@ import com.gregtechceu.gtceu.api.recipe.GTRecipeType;
 import com.gregtechceu.gtceu.api.recipe.condition.RecipeConditionType;
 
 import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -32,6 +37,9 @@ public class CommonProxy {
         CommonProxy.init();
         IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
         REGISTRATE.registerEventListeners(eventBus);
+        GTLWirelessAeContent.register(eventBus);
+        WirelessAeNetworkRuntime.register(MinecraftForge.EVENT_BUS);
+        WirelessAePackets.register();
         eventBus.addListener(this::commonSetup);
         eventBus.addListener(this::clientSetup);
         eventBus.addListener(this::addMaterialRegistries);
@@ -49,6 +57,7 @@ public class CommonProxy {
 
     private void commonSetup(final FMLCommonSetupEvent event) {
         StorageCells.addCellHandler(InfinityCellHandler.INSTANCE);
+        StorageCells.addCellHandler(FastInfinityCellHandler.INSTANCE);
         StorageCells.addCellGuiHandler(new InfinityCellGuiHandler());
         event.enqueueWork(this::postRegistrationInitialization).whenComplete((res, err) -> {
             if (err != null) {

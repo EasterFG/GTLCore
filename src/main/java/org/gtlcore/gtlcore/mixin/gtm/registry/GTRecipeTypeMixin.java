@@ -1,16 +1,11 @@
 package org.gtlcore.gtlcore.mixin.gtm.registry;
 
-import org.gtlcore.gtlcore.api.recipe.RecipeRunnerHelper;
 import org.gtlcore.gtlcore.common.data.GTLMaterials;
 
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.capability.recipe.FluidRecipeCapability;
-import com.gregtechceu.gtceu.api.capability.recipe.IRecipeCapabilityHolder;
-import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.GTRecipeType;
-import com.gregtechceu.gtceu.api.recipe.lookup.GTRecipeLookup;
-import com.gregtechceu.gtceu.api.recipe.lookup.RecipeIterator;
 import com.gregtechceu.gtceu.common.data.GTMaterials;
 import com.gregtechceu.gtceu.data.recipe.builder.GTRecipeBuilder;
 import com.gregtechceu.gtceu.utils.GTUtil;
@@ -18,7 +13,6 @@ import com.gregtechceu.gtceu.utils.GTUtil;
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.resources.ResourceLocation;
 
-import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.*;
 
 import java.util.*;
@@ -122,70 +116,5 @@ public class GTRecipeTypeMixin {
         }
         recipeBuilder.onSave(onBuild);
         return recipeBuilder.recipeType;
-    }
-
-    /**
-     * @author .
-     * @reason .
-     */
-    @Overwrite(remap = false)
-    public @Nullable Iterator<GTRecipe> searchFuelRecipe(IRecipeCapabilityHolder holder) {
-        return holder.hasProxies() && this.isFuelRecipeType() ? this.getLookup().getRecipeIterator(holder, (recipe) -> recipe.isFuel && RecipeRunnerHelper.matchRecipe(holder, recipe) && recipe.matchTickRecipe(holder).isSuccess()) : null;
-    }
-
-    /**
-     * @author .
-     * @reason .
-     */
-    @Overwrite(remap = false)
-    public Iterator<GTRecipe> searchRecipe(IRecipeCapabilityHolder holder) {
-        if (!holder.hasProxies()) {
-            return null;
-        } else {
-            RecipeIterator iterator = this.getLookup().getRecipeIterator(holder,
-                    (recipex) -> !recipex.isFuel && RecipeRunnerHelper.matchRecipe(holder, recipex) && recipex.matchTickRecipe(holder).isSuccess());
-            boolean any = false;
-            GTRecipe recipe = null;
-            while (iterator.hasNext()) {
-                recipe = iterator.next();
-                if (recipe != null) {
-                    any = true;
-                    break;
-                }
-            }
-            if (any) {
-                iterator.reset();
-                return Collections.singleton(recipe).iterator();
-            } else {
-                Iterator var7 = this.customRecipeLogicRunners.iterator();
-                do {
-                    if (!var7.hasNext()) {
-                        return Collections.emptyIterator();
-                    }
-                    GTRecipeType.ICustomRecipeLogic logic = (GTRecipeType.ICustomRecipeLogic) var7.next();
-                    recipe = logic.createCustomRecipe(holder);
-                } while (recipe == null);
-                return Collections.singleton(recipe).iterator();
-            }
-        }
-    }
-
-    public GTRecipeTypeMixin(List<GTRecipeType.ICustomRecipeLogic> customRecipeLogicRunners) {
-        this.customRecipeLogicRunners = customRecipeLogicRunners;
-    }
-
-    @Mutable
-    @Final
-    @Shadow(remap = false)
-    private final List<GTRecipeType.ICustomRecipeLogic> customRecipeLogicRunners;
-
-    @Shadow(remap = false)
-    public GTRecipeLookup getLookup() {
-        return null;
-    }
-
-    @Shadow(remap = false)
-    public boolean isFuelRecipeType() {
-        return false;
     }
 }

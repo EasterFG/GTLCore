@@ -3,8 +3,10 @@ package org.gtlcore.gtlcore.common.data.machines;
 import org.gtlcore.gtlcore.GTLCore;
 import org.gtlcore.gtlcore.api.machine.multiblock.GTLPartAbility;
 import org.gtlcore.gtlcore.api.pattern.GTLPredicates;
+import org.gtlcore.gtlcore.api.recipe.RecipeResult;
 import org.gtlcore.gtlcore.client.renderer.machine.EyeOfHarmonyRenderer;
 import org.gtlcore.gtlcore.client.renderer.machine.SpaceElevatorRenderer;
+import org.gtlcore.gtlcore.common.block.BlockMap;
 import org.gtlcore.gtlcore.common.block.GTLFusionCasingBlock;
 import org.gtlcore.gtlcore.common.data.*;
 import org.gtlcore.gtlcore.common.machine.multiblock.SimulationMachine;
@@ -56,6 +58,7 @@ import net.minecraft.world.level.block.DirectionalBlock;
 import net.minecraft.world.phys.AABB;
 
 import com.hepdd.gtmthings.data.CustomMachines;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
@@ -128,6 +131,8 @@ public class AdvancedMultiBlockMachine {
             .tooltips(Component.translatable("gtceu.machine.eye_of_harmony.tooltip.4"))
             .tooltips(Component.translatable("gtceu.machine.eye_of_harmony.tooltip.5"))
             .tooltips(Component.translatable("gtceu.machine.eye_of_harmony.tooltip.6"))
+            .tooltips(Component.translatable("gtceu.machine.eye_of_harmony.tooltip.7"))
+            .tooltips(Component.translatable("tooltip.gtlcore.structure.source", "GTNH"))
             .tooltips(Component.translatable("gtceu.machine.available_recipe_map_1.tooltip",
                     Component.translatable("gtceu.cosmos_simulation")))
             .tooltipBuilder(GTLMachines.GTL_ADD)
@@ -192,6 +197,7 @@ public class AdvancedMultiBlockMachine {
             .tooltips(Component.translatable("gtceu.machine.perfect_oc"))
             .tooltips(Component.translatable("gtceu.machine.available_recipe_map_1.tooltip",
                     Component.translatable("gtceu.space_probe_surface_reception")))
+            .tooltips(Component.translatable("tooltip.gtlcore.structure.source", "GCY"))
             .tooltipBuilder(GTLMachines.GTL_ADD)
             .recipeModifier(GTRecipeModifiers.ELECTRIC_OVERCLOCK.apply(OverclockingLogic.PERFECT_OVERCLOCK_SUBTICK))
             .appearanceBlock(GCyMBlocks.CASING_ATOMIC)
@@ -225,7 +231,31 @@ public class AdvancedMultiBlockMachine {
             .workableCasingRenderer(GTCEu.id("block/casings/gcym/atomic_casing"), GTCEu.id("block/multiblock/data_bank"))
             .register();
 
-    public final static MultiblockMachineDefinition SPACE_COSMIC_PROBE_RECEIVERS = REGISTRATE.multiblock("space_cosmic_probe_receivers", WorkableElectricMultiblockMachine::new)
+    public final static MultiblockMachineDefinition SPACE_COSMIC_PROBE_RECEIVERS = REGISTRATE.multiblock("space_cosmic_probe_receivers", holder -> new SpaceProbeSurfaceReceptionMachine(holder) {
+
+        @Override
+        @Nullable
+        protected BlockPos findTopBlock() {
+            Level level = getLevel();
+            if (level == null) return null;
+
+            BlockPos pos = getPos();
+            BlockPos[] coordinates = new BlockPos[] {
+                    pos.offset(9, 20, 0),
+                    pos.offset(-9, 20, 0),
+                    pos.offset(0, 20, 9),
+                    pos.offset(0, 20, -9)
+            };
+
+            for (BlockPos checkPos : coordinates) {
+                if (level.getBlockState(checkPos)
+                        .is(ChemicalHelper.getBlock(TagPrefix.frameGt, GTLMaterials.Vibranium))) {
+                    return checkPos.offset(0, 1, 0);
+                }
+            }
+            return null;
+        }
+    })
             .rotationState(RotationState.NON_Y_AXIS)
             .allowExtendedFacing(false)
             .recipeType(GTLRecipeTypes.SPACE_COSMIC_PROBE_RECEIVERS_RECIPES)
@@ -257,9 +287,9 @@ public class AdvancedMultiBlockMachine {
                     .aisle("          B               B          ", "          B               B          ", "           EEJJJJJJJJJJJEE           ", "          E               E          ", "          E               E          ", "           EE           EE           ", "             GGGEEEEEGGG             ", "                  E                  ", "          FFFDDDDDDDDDDDFFF          ", "          FFFDDDDDDDDDDDFFF          ", "          CCCCCCCCCCCCCCCCC          ", "       AAA                 AAA       ", "     AA                       AA     ", "    A                           A    ", "   A                             A   ", "AAA                               AAA", "                                     ", "                                     ", "                                     ", "                                     ", "                                     ", "                 CCC                 ", "               CCKKKCC               ", "                                     ", "                                     ", "                                     ", "                                     ", "                                     ", "                                     ", "                                     ", "                                     ")
                     .aisle("                                     ", "                                     ", "           EHJJJJJJJJJJJHE           ", "          E               E          ", "       B  E               E          ", "           EE           EE           ", "             EGG     GGE             ", "               GGEEEGG               ", "         FFFIDDFFFFFFFDDIFFF         ", "         FFFIDDFFFFFFFDDIFFF         ", "         CCCCCCCCCCCCCCCCCCC         ", "       AA                   AA       ", "     AA                       AA     ", "    A                           A    ", "   A                             A   ", "AAA                               AAA", "                                     ", "                                     ", "                                     ", "                                     ", "                                     ", "                CCDCC                ", "              CCKKKKKCC              ", "                                     ", "                                     ", "                                     ", "                                     ", "                                     ", "                                     ", "                                     ", "                                     ")
                     .aisle("                                     ", "                                     ", "           EHJJJJJJJJJJJHE           ", "         EE               EE         ", "      BD E                 E DB      ", "       D  EEE           EEE  D       ", "             EE       EE             ", "               GEEEEEG               ", "         FFFIDDFFFFFFFDDIFFF         ", "         FFFIDDFFFFFFFDDIFFF         ", "         CCCCCCCCCCCCCCCCCCC         ", "       AA                   AA       ", "     AA                       AA     ", "    A                           A    ", "   A                             A   ", "AAA                               AAA", "                                     ", "                                     ", "                                     ", "                                     ", "                  C                  ", "               CCDDDCC               ", "             CCKKKKKKKCC             ", "                                     ", "                                     ", "                                     ", "                                     ", "                                     ", "                                     ", "                                     ", "                                     ")
-                    .aisle("                                  B  ", "                                     ", "           EHJJJJJJJJJJJHE           ", "         EE               EE         ", "      B  E                 E  B      ", "        D EE             EE D        ", "        D   EEE       EEE   D        ", "               EEEEEEE      D        ", "         FFFIDDFFFFFFFDDIFFF         ", "         FFFIDDFFFFFFFDDIFFF         ", "         CCCCCCCCCCCCCCCCCCC         ", "       AA                   AA       ", "     AA                       AA     ", "    A                           A    ", "   A                             A   ", "AAA                               AAA", "                                     ", "                                     ", "                                     ", "                                     ", "                 CCC                 ", "              CCDDDDDCC              ", "             CKKKKKKKKKC             ", "                  L                  ", "                  L                  ", "                                     ", "                                     ", "                                     ", "                                     ", "                                     ", "                                     ")
+                    .aisle("  B                               B  ", "                                     ", "           EHJJJJJJJJJJJHE           ", "         EE               EE         ", "      B  E                 E  B      ", "        D EE             EE D        ", "        D   EEE       EEE   D        ", "               EEEEEEE      D        ", "         FFFIDDFFFFFFFDDIFFF         ", "         FFFIDDFFFFFFFDDIFFF         ", "         CCCCCCCCCCCCCCCCCCC         ", "       AA                   AA       ", "     AA                       AA     ", "    A                           A    ", "   A                             A   ", "AAA                               AAA", "                                     ", "                                     ", "                                     ", "                                     ", "                 CCC                 ", "              CCDDDDDCC              ", "             CKKKKKKKKKC             ", "                  L                  ", "                  L                  ", "                                     ", "                                     ", "                                     ", "                                     ", "                                     ", "                                     ")
                     .aisle("  BB                             BB  ", "   BB                           BB   ", "    BB    EEHJJJJJJJJJJJHEE    BB    ", "     BB  EE       M       EE  BB     ", "      B  E        M        E  B      ", "      BBBEEE      M      EEEBBB      ", "         D EEEE   M   EEEE D         ", "         D    EEEEMEEEE    D         ", "        DFFFIDDFFFMFFFDDIFFFD        ", "         FFFIDDFFFMFFFDDIFFF         ", "         CCCCCCCCCCCCCCCCCCC         ", "       AACC               CCAA       ", "     AACCC                 CCCAA     ", "    ACC                       CCA    ", "   AC                           CA   ", "AAAC C                         C CAAA", "      C                       C      ", "       C                     C       ", "        C                   C        ", "         C                 C         ", "          C     CCCCC     C          ", "           C  CDDDDDDDC  C           ", "            CCKKKKKKKKKCC            ", "                 LLL                 ", "                 LLL                 ", "                  L                  ", "                  L                  ", "                  L                  ", "                  L                  ", "                  L                  ", "                                     ")
-                    .aisle("                                  B  ", "                                     ", "           EHJJJJJJJJJJJHE           ", "         EE               EE         ", "      B  E                 E  B      ", "        D EE             EE D        ", "        D   EEE       EEE   D        ", "               EEEEEEE      D        ", "         FFFIDDFFFFFFFDDIFFF         ", "         FFFIDDFFFFFFFDDIFFF         ", "         CCCCCCCCCCCCCCCCCCC         ", "       AA                   AA       ", "     AA                       AA     ", "    A                           A    ", "   A                             A   ", "AAA                               AAA", "                                     ", "                                     ", "                                     ", "                                     ", "                 CCC                 ", "              CCDDDDDCC              ", "             CKKKKKKKKKC             ", "                  L                  ", "                  L                  ", "                                     ", "                                     ", "                                     ", "                                     ", "                                     ", "                                     ")
+                    .aisle("  B                               B  ", "                                     ", "           EHJJJJJJJJJJJHE           ", "         EE               EE         ", "      B  E                 E  B      ", "        D EE             EE D        ", "        D   EEE       EEE   D        ", "               EEEEEEE      D        ", "         FFFIDDFFFFFFFDDIFFF         ", "         FFFIDDFFFFFFFDDIFFF         ", "         CCCCCCCCCCCCCCCCCCC         ", "       AA                   AA       ", "     AA                       AA     ", "    A                           A    ", "   A                             A   ", "AAA                               AAA", "                                     ", "                                     ", "                                     ", "                                     ", "                 CCC                 ", "              CCDDDDDCC              ", "             CKKKKKKKKKC             ", "                  L                  ", "                  L                  ", "                                     ", "                                     ", "                                     ", "                                     ", "                                     ", "                                     ")
                     .aisle("                                     ", "                                     ", "           EHJJJJJJJJJJJHE           ", "         EE               EE         ", "      BD E                 E DB      ", "       D  EEE           EEE  D       ", "             EE       EE             ", "               GEEEEEG               ", "         FFFIDDFFFFFFFDDIFFF         ", "         FFFIDDFFFFFFFDDIFFF         ", "         CCCCCCCCCCCCCCCCCCC         ", "       AA                   AA       ", "     AA                       AA     ", "    A                           A    ", "   A                             A   ", "AAA                               AAA", "                                     ", "                                     ", "                                     ", "                                     ", "                  C                  ", "               CCDDDDC               ", "             CCKKKKKKKCC             ", "                                     ", "                                     ", "                                     ", "                                     ", "                                     ", "                                     ", "                                     ", "                                     ")
                     .aisle("                                     ", "                                     ", "           EHJJJJJJJJJJJHE           ", "          E               E          ", "       B  E               E          ", "           EE           EE           ", "             EGG     GGE             ", "               GGEEEGG               ", "         FFFIDDFFFFFFFDDIFFF         ", "         FFFIDDFFFFFFFDDIFFF         ", "         CCCCCCCCCCCCCCCCCCC         ", "       AA                   AA       ", "     AA                       AA     ", "    A                           A    ", "   A                             A   ", "AAA                               AAA", "                                     ", "                                     ", "                                     ", "                                     ", "                                     ", "                CCDCC                ", "              CCKKKKKCC              ", "                                     ", "                                     ", "                                     ", "                                     ", "                                     ", "                                     ", "                                     ", "                                     ")
                     .aisle("          B               B          ", "          B               B          ", "           EEJJJJJJJJJJJEE           ", "          E               E          ", "          E               E          ", "           EE           EE           ", "             GGGEEEEEGGG             ", "                  E                  ", "          FFFDDDDDDDDDDDFFF          ", "          FFFDDDDDDDDDDDFFF          ", "          CCCCCCCCCCCCCCCCC          ", "       AAA                 AAA       ", "     AA                       AA     ", "    A                           A    ", "   A                             A   ", "AAA                               AAA", "                                     ", "                                     ", "                                     ", "                                     ", "                                     ", "                 CCC                 ", "               CCKKKCC               ", "                                     ", "                                     ", "                                     ", "                                     ", "                                     ", "                                     ", "                                     ", "                                     ")
@@ -310,6 +340,7 @@ public class AdvancedMultiBlockMachine {
             .tooltips(Component.translatable("gtceu.multiblock.parallelizable.tooltip"))
             .tooltips(Component.translatable("gtceu.machine.available_recipe_map_2.tooltip",
                     Component.translatable("gtceu.dimensionally_transcendent_plasma_forge"), Component.translatable("gtceu.stellar_forge")))
+            .tooltips(Component.translatable("tooltip.gtlcore.structure.source", "GTNH"))
             .tooltipBuilder(GTLMachines.GTL_ADD)
             .recipeModifiers(GTRecipeModifiers.PARALLEL_HATCH, GTRecipeModifiers.ELECTRIC_OVERCLOCK.apply(OverclockingLogic.PERFECT_OVERCLOCK_SUBTICK))
             .appearanceBlock(GTLBlocks.DIMENSIONALLY_TRANSCENDENT_CASING)
@@ -348,7 +379,7 @@ public class AdvancedMultiBlockMachine {
                     int temp = machine.getCoilType().getCoilTemperature();
                     components.add(Component.translatable("gtceu.multiblock.blast_furnace.max_temperature", Component.literal(FormattingUtil.formatNumbers((temp == 273 ? 32000 : temp)) + "K").withStyle(ChatFormatting.BLUE)));
                     if (machine.getRecipeType() == GTLRecipeTypes.STELLAR_FORGE_RECIPES && temp != 273) {
-                        components.add(Component.literal("当前配方模式无法使用该线圈").withStyle(ChatFormatting.RED));
+                        components.add(Component.translatable("message.gtlcore.coil_incompatible_recipe_mode").withStyle(ChatFormatting.RED));
                     }
                 }
             })
@@ -399,8 +430,8 @@ public class AdvancedMultiBlockMachine {
                     .where("c", Predicates.blocks(GTBlocks.CASING_LAMINATED_GLASS.get()))
                     .where("d", Predicates.blocks(GTMachines.ITEM_IMPORT_BUS[0].get()).or(Predicates.blocks(CustomMachines.HUGE_ITEM_IMPORT_BUS[0].get())))
                     .where("e", Predicates.blocks(Registries.getBlock("kubejs:machine_casing_circuit_assembly_line")))
-                    .where("f", Predicates.abilities(PartAbility.EXPORT_ITEMS))
-                    .where("g", Predicates.abilities(PartAbility.IMPORT_FLUIDS_4X))
+                    .where("f", GTLPredicates.diffAbilities(List.of(PartAbility.EXPORT_ITEMS), List.of(PartAbility.IMPORT_ITEMS, PartAbility.IMPORT_FLUIDS)))
+                    .where("g", Predicates.abilities(PartAbility.IMPORT_FLUIDS_4X).or(Predicates.blocks(GTLMachines.HUGE_FLUID_IMPORT_HATCH[4].get())))
                     .build())
             .workableCasingRenderer(GTLCore.id("block/casings/pikyonium_machine_casing"), GTCEu.id("block/multiblock/assembly_line"))
             .register();
@@ -452,32 +483,16 @@ public class AdvancedMultiBlockMachine {
             .workableCasingRenderer(GTLCore.id("block/space_elevator_mechanical_casing"), GTCEu.id("block/multiblock/gcym/large_assembler"))
             .register();
 
-    private static final List<int[]> poses1 = new ArrayList<>();
-    private static final List<int[]> poses2 = new ArrayList<>();
-    private static final Map<String, String> covRecipe = new HashMap<>();
+    private static final Map<String, String> COV_RECIPE = new HashMap<>();
 
     static {
-        for (int i = -2; i <= 2; i++) {
-            for (int j = -1; j >= -5; j--) {
-                for (int k = -2; k <= 2; k++) {
-                    poses1.add(new int[] { i, j, k });
-                }
-            }
-        }
-        for (int i = -4; i <= 4; i++) {
-            for (int j = -1; j >= -7; j--) {
-                for (int k = -4; k <= 4; k++) {
-                    poses2.add(new int[] { i, j, k });
-                }
-            }
-        }
-        covRecipe.put("minecraft:bone_block", "kubejs:essence_block");
-        covRecipe.put("minecraft:oak_log", "minecraft:crimson_stem");
-        covRecipe.put("minecraft:birch_log", "minecraft:warped_stem");
-        covRecipe.put("gtceu:calcium_block", "minecraft:bone_block");
-        covRecipe.put("minecraft:moss_block", "minecraft:sculk");
-        covRecipe.put("minecraft:grass_block", "minecraft:moss_block");
-        covRecipe.put("kubejs:infused_obsidian", "kubejs:draconium_block_charged");
+        COV_RECIPE.put("minecraft:bone_block", "kubejs:essence_block");
+        COV_RECIPE.put("minecraft:oak_log", "minecraft:crimson_stem");
+        COV_RECIPE.put("minecraft:birch_log", "minecraft:warped_stem");
+        COV_RECIPE.put("gtceu:calcium_block", "minecraft:bone_block");
+        COV_RECIPE.put("minecraft:moss_block", "minecraft:sculk");
+        COV_RECIPE.put("minecraft:grass_block", "minecraft:moss_block");
+        COV_RECIPE.put("kubejs:infused_obsidian", "kubejs:draconium_block_charged");
     }
 
     private static boolean blockConversionRoom(List<int[]> poses, IRecipeLogicMachine machine, int tier) {
@@ -493,8 +508,8 @@ public class AdvancedMultiBlockMachine {
                             pos = pos_0;
                             BlockPos blockPos = machine.self().getPos().offset(pos[0], pos[1], pos[2]);
                             String block = level.getBlockState(blockPos).getBlock().kjs$getId();
-                            if (covRecipe.containsKey(block)) {
-                                level.setBlockAndUpdate(blockPos, Registries.getBlock(covRecipe.get(block)).defaultBlockState());
+                            if (COV_RECIPE.containsKey(block)) {
+                                level.setBlockAndUpdate(blockPos, Registries.getBlock(COV_RECIPE.get(block)).defaultBlockState());
                             }
                         } else {
                             i--;
@@ -586,6 +601,7 @@ public class AdvancedMultiBlockMachine {
             .tooltips(Component.translatable("gtceu.machine.pcb_factory.tooltip.2"))
             .tooltips(Component.translatable("gtceu.machine.perfect_oc"))
             .tooltips(Component.translatable("gtceu.multiblock.parallelizable.tooltip"))
+            .tooltips(Component.translatable("tooltip.gtlcore.structure.source", "GTNH"))
             .tooltips(Component.translatable("gtceu.machine.available_recipe_map_1.tooltip",
                     Component.translatable("gtceu.pcb_factory")))
             .tooltipBuilder(GTLMachines.GTL_ADD)
@@ -636,6 +652,7 @@ public class AdvancedMultiBlockMachine {
             .tooltips(Component.translatable("gtceu.machine.electric_blast_furnace.tooltip.0"))
             .tooltips(Component.translatable("gtceu.machine.perfect_oc"))
             .tooltips(Component.translatable("gtceu.machine.electric_blast_furnace.tooltip.2"))
+            .tooltips(Component.translatable("tooltip.gtlcore.structure.source", "GT++"))
             .tooltips(Component.translatable("gtceu.machine.available_recipe_map_1.tooltip",
                     Component.translatable("gtceu.electric_blast_furnace")))
             .tooltipBuilder(GTLMachines.GTL_ADD)
@@ -688,6 +705,7 @@ public class AdvancedMultiBlockMachine {
             .tooltips(Component.translatable("gtceu.machine.duration_multiplier.tooltip", 0.5))
             .tooltips(Component.translatable("gtceu.machine.cold_ice_freezer.tooltip.0"))
             .tooltips(Component.translatable("gtceu.machine.blaze_blast_furnace.tooltip.1"))
+            .tooltips(Component.translatable("tooltip.gtlcore.structure.source", "GT++"))
             .tooltips(Component.translatable("gtceu.machine.available_recipe_map_1.tooltip",
                     Component.translatable("gtceu.vacuum_freezer")))
             .tooltipBuilder(GTLMachines.GTL_ADD)
@@ -794,7 +812,7 @@ public class AdvancedMultiBlockMachine {
                                 if (Objects.equals(player.getArmorSlots().toString(), "[1 magnetohydrodynamicallyconstrainedstarmatter_boots, 1 magnetohydrodynamicallyconstrainedstarmatter_leggings, 1 magnetohydrodynamicallyconstrainedstarmatter_chestplate, 1 magnetohydrodynamicallyconstrainedstarmatter_helmet]")) {
                                     player.getServer().kjs$runCommandSilent("execute in kubejs:create as " + entity.getName().getString() + " run tp 0 1 0");
                                 } else {
-                                    player.kjs$setStatusMessage(Component.literal("你的装备无法适应目标维度的环境"));
+                                    player.kjs$setStatusMessage(Component.translatable("message.gtlcore.equipment_incompatible_dimension"));
                                 }
                             }
                             if (entity instanceof ItemEntity item && Objects.equals(item.getItem().kjs$getId(), "gtceu:magnetohydrodynamicallyconstrainedstarmatter_block")) {
@@ -813,7 +831,7 @@ public class AdvancedMultiBlockMachine {
             .workableCasingRenderer(GTLCore.id("block/dimension_connection_casing"), GTCEu.id("block/multiblock/door_of_create"))
             .register();
 
-    public final static MultiblockMachineDefinition BEDROCK_DRILLING_RIG = REGISTRATE.multiblock("bedrock_drilling_rig", WorkableElectricMultiblockMachine::new)
+    public final static MultiblockMachineDefinition BEDROCK_DRILLING_RIG = REGISTRATE.multiblock("bedrock_drilling_rig", BedrockDrillingRig::new)
             .rotationState(RotationState.NONE)
             .allowExtendedFacing(false)
             .allowFlip(false)
@@ -851,16 +869,6 @@ public class AdvancedMultiBlockMachine {
                     .where("g", Predicates.blocks(Registries.getBlock("kubejs:machine_casing_grinding_head")))
                     .where(" ", Predicates.any())
                     .build())
-            .beforeWorking((machine, recipe) -> {
-                Level level = machine.self().getLevel();
-                if (level != null) {
-                    if (Math.random() < 0.1) {
-                        level.setBlockAndUpdate(machine.self().getPos().offset(0, -9, 0), Blocks.AIR.defaultBlockState());
-                    }
-                    return Objects.equals(level.getBlockState(machine.self().getPos().offset(0, -9, 0)).getBlock().kjs$getId(), "minecraft:bedrock");
-                }
-                return false;
-            })
             .workableCasingRenderer(GTLCore.id("block/casings/echo_casing"), GTCEu.id("block/multiblock/cleanroom"))
             .register();
 
@@ -933,7 +941,7 @@ public class AdvancedMultiBlockMachine {
             .workableCasingRenderer(GTLCore.id("block/dimension_connection_casing"), GTCEu.id("block/multiblock/create_aggregation"))
             .register();
 
-    public final static MultiblockMachineDefinition SUPRACHRONAL_ASSEMBLY_LINE = REGISTRATE.multiblock("suprachronal_assembly_line", (holder) -> new SuprachronalAssemblyLineMachine(holder, false))
+    public final static MultiblockMachineDefinition SUPRACHRONAL_ASSEMBLY_LINE = REGISTRATE.multiblock("suprachronal_assembly_line", SuprachronalAssemblyLineMachine::new)
             .rotationState(RotationState.ALL)
             .recipeType(GTLRecipeTypes.SUPRACHRONAL_ASSEMBLY_LINE_RECIPES)
             .recipeType(GTRecipeTypes.ASSEMBLY_LINE_RECIPES)
@@ -944,6 +952,7 @@ public class AdvancedMultiBlockMachine {
             .tooltips(Component.translatable("gtceu.multiblock.laser.tooltip"))
             .tooltips(Component.translatable("gtceu.machine.perfect_oc"))
             .tooltips(Component.translatable("gtceu.multiblock.parallelizable.tooltip"))
+            .tooltips(Component.translatable("tooltip.gtlcore.structure.source", "TST"))
             .tooltips(Component.translatable("gtceu.machine.available_recipe_map_3.tooltip",
                     Component.translatable("gtceu.suprachronal_assembly_line"), Component.translatable("gtceu.assembly_line"), Component.translatable("gtceu.circuit_assembly_line")))
             .tooltipBuilder(GTLMachines.GTL_ADD)
@@ -1011,17 +1020,18 @@ public class AdvancedMultiBlockMachine {
             .workableCasingRenderer(GTLCore.id("block/molecular_casing"), GTCEu.id("block/multiblock/fusion_reactor"))
             .register();
 
-    public final static MultiblockMachineDefinition SUPRACHRONAL_ASSEMBLY_LINE_MODULE = REGISTRATE.multiblock("suprachronal_assembly_line_module", (holder) -> new SuprachronalAssemblyLineMachine(holder, true))
+    public final static MultiblockMachineDefinition SUPRACHRONAL_ASSEMBLY_LINE_MODULE = REGISTRATE.multiblock("suprachronal_assembly_line_module", SuprachronalAssemblyLineModuleMachine::new)
             .rotationState(RotationState.ALL)
             .recipeType(GTRecipeTypes.ASSEMBLY_LINE_RECIPES)
             .recipeType(GTLRecipeTypes.CIRCUIT_ASSEMBLY_LINE_RECIPES)
             .tooltips(Component.translatable("gtceu.machine.duration_multiplier.tooltip", 0.4))
             .tooltips(Component.translatable("gtceu.machine.suprachronal_assembly_line_module.tooltip.0"))
             .tooltips(Component.translatable("gtceu.multiblock.laser.tooltip"))
+            .tooltips(Component.translatable("tooltip.gtlcore.structure.source", "TST"))
             .tooltips(Component.translatable("gtceu.machine.available_recipe_map_2.tooltip",
                     Component.translatable("gtceu.assembly_line"), Component.translatable("gtceu.circuit_assembly_line")))
             .tooltipBuilder(GTLMachines.GTL_ADD)
-            .recipeModifiers((machine, recipe, params, result) -> GTLRecipeModifiers.reduction(machine, recipe, 1, 0.4), (machine, recipe, params, result) -> GTRecipeModifiers.accurateParallel(machine, recipe, ((SuprachronalAssemblyLineMachine) machine).getParallel(), false).getFirst(), GTRecipeModifiers.ELECTRIC_OVERCLOCK.apply(OverclockingLogic.NON_PERFECT_OVERCLOCK_SUBTICK))
+            .recipeModifiers((machine, recipe, params, result) -> GTLRecipeModifiers.reduction(machine, recipe, 1, 0.4), (machine, recipe, params, result) -> GTRecipeModifiers.accurateParallel(machine, recipe, ((SuprachronalAssemblyLineModuleMachine) machine).getParallel(), false).getFirst(), GTRecipeModifiers.ELECTRIC_OVERCLOCK.apply(OverclockingLogic.NON_PERFECT_OVERCLOCK_SUBTICK))
             .appearanceBlock(GTLBlocks.MOLECULAR_CASING)
             .pattern(definition -> FactoryBlockPattern.start()
                     .aisle(" D ", " E ", " D ")
@@ -1030,7 +1040,6 @@ public class AdvancedMultiBlockMachine {
                     .aisle(" C ", " C ", " C ")
                     .aisle(" B ", " B ", " B ")
                     .aisle("AAA", "A~A", "AAA")
-                    .aisle("   ", " - ", "   ")
                     .where("~", Predicates.controller(Predicates.blocks(definition.get())))
                     .where("B", Predicates.blocks(GTLBlocks.DIMENSIONALLY_TRANSCENDENT_CASING.get()))
                     .where("C", Predicates.blocks(Registries.getBlock("kubejs:molecular_coil")))
@@ -1044,7 +1053,6 @@ public class AdvancedMultiBlockMachine {
                             .or(Predicates.abilities(PartAbility.INPUT_ENERGY).setMaxGlobalLimited(2))
                             .or(Predicates.abilities(PartAbility.INPUT_LASER).setMaxGlobalLimited(1)))
                     .where(" ", Predicates.any())
-                    .where("-", Predicates.air())
                     .build())
             .workableCasingRenderer(GTLCore.id("block/molecular_casing"), GTCEu.id("block/multiblock/fusion_reactor"))
             .register();
@@ -1066,6 +1074,7 @@ public class AdvancedMultiBlockMachine {
             .tooltips(Component.translatable("gtceu.machine.duration_multiplier.tooltip", 0.6))
             .tooltips(Component.translatable("gtceu.machine.processing_plant.tooltip.0"))
             .tooltips(Component.translatable("gtceu.machine.processing_plant.tooltip.1"))
+            .tooltips(Component.translatable("tooltip.gtlcore.structure.source", "GTNH"))
             .tooltips(Component.translatable("gtceu.machine.available_recipe_map_11.tooltip",
                     Component.translatable("gtceu.bender"),
                     Component.translatable("gtceu.compressor"),
@@ -1097,6 +1106,10 @@ public class AdvancedMultiBlockMachine {
                 if (machine instanceof StorageMachine storageMachine) {
                     int tier = storageMachine.getTier();
                     GTRecipeType recipeType = storageMachine.getRecipeType();
+                    if (storageMachine.getMachineStorageItem().isEmpty()) {
+                        RecipeResult.of(machine, RecipeResult.FAIL_PROCESSING_PLANT_NO_INPUT);
+                        return false;
+                    }
                     if (recipeType.equals(GTRecipeTypes.BENDER_RECIPES)) {
                         isrecipe = Objects.equals(storageMachine.getMachineStorageItem().kjs$getId(), "gtceu:" + GTValues.VN[tier].toLowerCase() + "_bender");
                     } else if (recipeType.equals(GTRecipeTypes.COMPRESSOR_RECIPES)) {
@@ -1121,6 +1134,7 @@ public class AdvancedMultiBlockMachine {
                         isrecipe = Objects.equals(storageMachine.getMachineStorageItem().kjs$getId(), "gtceu:" + GTValues.VN[tier].toLowerCase() + "_laser_engraver");
                     }
                     if (!isrecipe) {
+                        RecipeResult.of(machine, RecipeResult.FAIL_PROCESSING_PLANT_WRONG_INPUT);
                         machine.getRecipeLogic().interruptRecipe();
                     }
                 }
@@ -1138,6 +1152,7 @@ public class AdvancedMultiBlockMachine {
             .tooltips(Component.translatable("gtceu.machine.duration_multiplier.tooltip", 0.6))
             .tooltips(Component.translatable("gtceu.machine.processing_plant.tooltip.0"))
             .tooltips(Component.translatable("gtceu.machine.processing_plant.tooltip.1"))
+            .tooltips(Component.translatable("tooltip.gtlcore.structure.source", "GTNH"))
             .tooltips(Component.translatable("gtceu.machine.available_recipe_map_2.tooltip",
                     Component.translatable("gtceu.assembler"), Component.translatable("gtceu.circuit_assembler")))
             .tooltipBuilder(GTLMachines.GTL_ADD)
@@ -1159,12 +1174,17 @@ public class AdvancedMultiBlockMachine {
                 if (machine instanceof StorageMachine storageMachine) {
                     int tier = storageMachine.getTier();
                     GTRecipeType recipeType = storageMachine.getRecipeType();
+                    if (storageMachine.getMachineStorageItem().isEmpty()) {
+                        RecipeResult.of(machine, RecipeResult.FAIL_PROCESSING_PLANT_NO_INPUT);
+                        return false;
+                    }
                     if (recipeType.equals(GTRecipeTypes.ASSEMBLER_RECIPES)) {
                         isrecipe = Objects.equals(storageMachine.getMachineStorageItem().kjs$getId(), "gtceu:" + GTValues.VN[tier].toLowerCase() + "_assembler");
                     } else if (recipeType.equals(GTRecipeTypes.CIRCUIT_ASSEMBLER_RECIPES)) {
                         isrecipe = Objects.equals(storageMachine.getMachineStorageItem().kjs$getId(), "gtceu:" + GTValues.VN[tier].toLowerCase() + "_circuit_assembler");
                     }
                     if (!isrecipe) {
+                        RecipeResult.of(machine, RecipeResult.FAIL_PROCESSING_PLANT_WRONG_INPUT);
                         machine.getRecipeLogic().interruptRecipe();
                     }
                 }
@@ -1187,6 +1207,7 @@ public class AdvancedMultiBlockMachine {
             .tooltips(Component.translatable("gtceu.machine.duration_multiplier.tooltip", 0.6))
             .tooltips(Component.translatable("gtceu.machine.processing_plant.tooltip.0"))
             .tooltips(Component.translatable("gtceu.machine.processing_plant.tooltip.1"))
+            .tooltips(Component.translatable("tooltip.gtlcore.structure.source", "GTNH"))
             .tooltips(Component.translatable("gtceu.machine.available_recipe_map_7.tooltip",
                     Component.translatable("gtceu.centrifuge"),
                     Component.translatable("gtceu.thermal_centrifuge"),
@@ -1214,6 +1235,10 @@ public class AdvancedMultiBlockMachine {
                 if (machine instanceof StorageMachine storageMachine) {
                     int tier = storageMachine.getTier();
                     GTRecipeType recipeType = storageMachine.getRecipeType();
+                    if (storageMachine.getMachineStorageItem().isEmpty()) {
+                        RecipeResult.of(machine, RecipeResult.FAIL_PROCESSING_PLANT_NO_INPUT);
+                        return false;
+                    }
                     if (recipeType.equals(GTRecipeTypes.CENTRIFUGE_RECIPES)) {
                         isrecipe = Objects.equals(storageMachine.getMachineStorageItem().kjs$getId(), "gtceu:" + GTValues.VN[tier].toLowerCase() + "_centrifuge");
                     } else if (recipeType.equals(GTRecipeTypes.THERMAL_CENTRIFUGE_RECIPES)) {
@@ -1230,6 +1255,7 @@ public class AdvancedMultiBlockMachine {
                         isrecipe = Objects.equals(storageMachine.getMachineStorageItem().kjs$getId(), "gtceu:" + GTValues.VN[tier].toLowerCase() + "_dehydrator");
                     }
                     if (!isrecipe) {
+                        RecipeResult.of(machine, RecipeResult.FAIL_PROCESSING_PLANT_WRONG_INPUT);
                         machine.getRecipeLogic().interruptRecipe();
                     }
                 }
@@ -1249,6 +1275,7 @@ public class AdvancedMultiBlockMachine {
             .tooltips(Component.translatable("gtceu.machine.duration_multiplier.tooltip", 0.6))
             .tooltips(Component.translatable("gtceu.machine.processing_plant.tooltip.0"))
             .tooltips(Component.translatable("gtceu.machine.processing_plant.tooltip.1"))
+            .tooltips(Component.translatable("tooltip.gtlcore.structure.source", "GTNH"))
             .tooltips(Component.translatable("gtceu.machine.available_recipe_map_4.tooltip",
                     Component.translatable("gtceu.chemical_reactor"),
                     Component.translatable("gtceu.mixer"),
@@ -1273,6 +1300,10 @@ public class AdvancedMultiBlockMachine {
                 if (machine instanceof StorageMachine storageMachine) {
                     int tier = storageMachine.getTier();
                     GTRecipeType recipeType = storageMachine.getRecipeType();
+                    if (storageMachine.getMachineStorageItem().isEmpty()) {
+                        RecipeResult.of(machine, RecipeResult.FAIL_PROCESSING_PLANT_NO_INPUT);
+                        return false;
+                    }
                     if (recipeType.equals(GTRecipeTypes.CHEMICAL_RECIPES)) {
                         isrecipe = Objects.equals(storageMachine.getMachineStorageItem().kjs$getId(), "gtceu:" + GTValues.VN[tier].toLowerCase() + "_chemical_reactor");
                     } else if (recipeType.equals(GTRecipeTypes.MIXER_RECIPES)) {
@@ -1283,6 +1314,7 @@ public class AdvancedMultiBlockMachine {
                         isrecipe = Objects.equals(storageMachine.getMachineStorageItem().kjs$getId(), "gtceu:" + GTValues.VN[tier].toLowerCase() + "_ore_washer");
                     }
                     if (!isrecipe) {
+                        RecipeResult.of(machine, RecipeResult.FAIL_PROCESSING_PLANT_WRONG_INPUT);
                         machine.getRecipeLogic().interruptRecipe();
                     }
                 }
@@ -1349,7 +1381,8 @@ public class AdvancedMultiBlockMachine {
             .recipeType(GTLRecipeTypes.NANO_FORGE_RECIPES)
             .tooltips(Component.translatable("gtceu.machine.nano_forge.tooltip.0"))
             .tooltips(Component.translatable("gtceu.machine.nano_forge_1.tooltip.0"))
-            .tooltips(Component.translatable("gtceu.multiblock.laser.tooltip"))
+            .tooltips(Component.translatable("gtceu.multiblock.only.laser.tooltip"))
+            .tooltips(Component.translatable("tooltip.gtlcore.structure.source", "GTNH"))
             .tooltips(Component.translatable("gtceu.machine.available_recipe_map_1.tooltip",
                     Component.translatable("gtceu.nano_forge")))
             .tooltipBuilder(GTLMachines.GTL_ADD)
@@ -1380,7 +1413,7 @@ public class AdvancedMultiBlockMachine {
                     if (Objects.equals(machine.getMachineStorageItem().kjs$getId(), "gtceu:carbon_nanoswarm")) {
                         components.add(Component.translatable("gtceu.multiblock.parallel", Component.literal(String.valueOf(machine.getMachineStorageItem().getCount())).withStyle(ChatFormatting.DARK_PURPLE)).withStyle(ChatFormatting.GRAY));
                     } else {
-                        components.add(Component.literal("需要放入碳纳米蜂群").withStyle(ChatFormatting.RED));
+                        components.add(Component.translatable("message.gtlcore.need_carbon_nano_swarm_red").withStyle(ChatFormatting.RED));
                     }
                 }
             })
@@ -1394,7 +1427,8 @@ public class AdvancedMultiBlockMachine {
             .tooltips(Component.translatable("gtceu.machine.nano_forge.tooltip.0"))
             .tooltips(Component.translatable("gtceu.machine.nano_forge_2.tooltip.0"))
             .tooltips(Component.translatable("gtceu.machine.nano_forge_2.tooltip.1"))
-            .tooltips(Component.translatable("gtceu.multiblock.laser.tooltip"))
+            .tooltips(Component.translatable("gtceu.multiblock.only.laser.tooltip"))
+            .tooltips(Component.translatable("tooltip.gtlcore.structure.source", "GTNH"))
             .tooltips(Component.translatable("gtceu.machine.available_recipe_map_1.tooltip",
                     Component.translatable("gtceu.nano_forge")))
             .tooltipBuilder(GTLMachines.GTL_ADD)
@@ -1429,7 +1463,7 @@ public class AdvancedMultiBlockMachine {
                     if (Objects.equals(machine.getMachineStorageItem().kjs$getId(), "gtceu:neutronium_nanoswarm")) {
                         components.add(Component.translatable("gtceu.multiblock.parallel", Component.literal(String.valueOf(machine.getMachineStorageItem().getCount())).withStyle(ChatFormatting.DARK_PURPLE)).withStyle(ChatFormatting.GRAY));
                     } else {
-                        components.add(Component.literal("需要放入中子素纳米蜂群").withStyle(ChatFormatting.RED));
+                        components.add(Component.translatable("message.gtlcore.need_neutronium_nano_swarm_red").withStyle(ChatFormatting.RED));
                     }
                 }
             })
@@ -1444,7 +1478,8 @@ public class AdvancedMultiBlockMachine {
             .tooltips(Component.translatable("gtceu.machine.nano_forge_3.tooltip.0"))
             .tooltips(Component.translatable("gtceu.machine.nano_forge_3.tooltip.1"))
             .tooltips(Component.translatable("gtceu.machine.nano_forge_3.tooltip.2"))
-            .tooltips(Component.translatable("gtceu.multiblock.laser.tooltip"))
+            .tooltips(Component.translatable("gtceu.multiblock.only.laser.tooltip"))
+            .tooltips(Component.translatable("tooltip.gtlcore.structure.source", "GTNH"))
             .tooltips(Component.translatable("gtceu.machine.available_recipe_map_1.tooltip",
                     Component.translatable("gtceu.nano_forge")))
             .tooltipBuilder(GTLMachines.GTL_ADD)
@@ -1480,7 +1515,7 @@ public class AdvancedMultiBlockMachine {
                     if (Objects.equals(machine.getMachineStorageItem().kjs$getId(), "gtceu:draconium_nanoswarm")) {
                         components.add(Component.translatable("gtceu.multiblock.parallel", Component.literal(String.valueOf(machine.getMachineStorageItem().getCount())).withStyle(ChatFormatting.DARK_PURPLE)).withStyle(ChatFormatting.GRAY));
                     } else {
-                        components.add(Component.literal("需要放入龙纳米蜂群").withStyle(ChatFormatting.RED));
+                        components.add(Component.translatable("message.gtlcore.need_dragon_nano_swarm_red").withStyle(ChatFormatting.RED));
                     }
                 }
             })
@@ -1492,6 +1527,7 @@ public class AdvancedMultiBlockMachine {
             .recipeType(GTLRecipeTypes.ISA_MILL_RECIPES)
             .tooltips(Component.translatable("gtceu.machine.isa_mill.tooltip.0"))
             .tooltips(Component.translatable("gtceu.machine.perfect_oc"))
+            .tooltips(Component.translatable("tooltip.gtlcore.structure.source", "GTNH"))
             .tooltips(Component.translatable("gtceu.machine.available_recipe_map_1.tooltip",
                     Component.translatable("gtceu.isa_mill")))
             .tooltipBuilder(GTLMachines.GTL_ADD)
@@ -1548,6 +1584,7 @@ public class AdvancedMultiBlockMachine {
             .tooltips(Component.translatable("gtceu.machine.neutron_activator.tooltip.3"))
             .tooltips(Component.translatable("gtceu.machine.neutron_activator.tooltip.4"))
             .tooltips(Component.translatable("gtceu.multiblock.parallelizable.tooltip"))
+            .tooltips(Component.translatable("tooltip.gtlcore.structure.source", "GTNH"))
             .tooltips(Component.translatable("gtceu.machine.available_recipe_map_1.tooltip",
                     Component.translatable("gtceu.neutron_activator")))
             .tooltipBuilder(GTLMachines.GTL_ADD)
@@ -1586,6 +1623,7 @@ public class AdvancedMultiBlockMachine {
             .langValue("Heat Exchanger")
             .tooltips(Component.translatable("gtceu.machine.heat_exchanger.tooltip.0"))
             .tooltips(Component.translatable("gtceu.machine.heat_exchanger.tooltip.1"))
+            .tooltips(Component.translatable("tooltip.gtlcore.structure.source", "GTNH"))
             .tooltips(Component.translatable("gtceu.machine.available_recipe_map_1.tooltip",
                     Component.translatable("gtceu.heat_exchanger")))
             .tooltipBuilder(GTLMachines.GTL_ADD)
@@ -1743,6 +1781,7 @@ public class AdvancedMultiBlockMachine {
             .tooltips(Component.translatable("gtceu.machine.space_elevator.tooltip.0"))
             .tooltips(Component.translatable("gtceu.machine.space_elevator.tooltip.1"))
             .tooltips(Component.translatable("gtceu.machine.space_elevator.tooltip.2"))
+            .tooltips(Component.translatable("tooltip.gtlcore.structure.source", "GTNH"))
             .tooltips(Component.translatable("gtceu.machine.available_recipe_map_1.tooltip",
                     Component.translatable("gtceu.space_elevator")))
             .tooltipBuilder(GTLMachines.GTL_ADD)
@@ -1793,7 +1832,7 @@ public class AdvancedMultiBlockMachine {
                     .where("E", Predicates.blocks(GTLBlocks.SPACE_ELEVATOR_SUPPORT.get()))
                     .where("H", Predicates.blocks(ChemicalHelper.getBlock(TagPrefix.frameGt, GTMaterials.Neutronium)))
                     .where("F", Predicates.blocks(Registries.getBlock("kubejs:space_elevator_internal_support")))
-                    .where("C", GTLPredicates.tierActiveCasings(GTLBlocks.sepmmap, "SEPMTier"))
+                    .where("C", GTLPredicates.tierCasings(BlockMap.sepmMap, "SEPMTier"))
                     .where("A", Predicates.blocks(Registries.getBlock("kubejs:high_strength_concrete")))
                     .where("D", Predicates.blocks(GTLBlocks.SPACE_ELEVATOR_MECHANICAL_CASING.get()))
                     .where("M", Predicates.blocks(GTLBlocks.POWER_CORE.get()))
@@ -1955,6 +1994,7 @@ public class AdvancedMultiBlockMachine {
                             Component.translatable("gtceu.machine.fusion_reactor.overclocking"))
                     .tooltips(Component.translatable("gtceu.multiblock.laser.tooltip"))
                     .tooltips(Component.translatable("gtceu.multiblock.parallelizable.tooltip"))
+                    .tooltips(Component.translatable("tooltip.gtlcore.structure.source", "GTNH"))
                     .tooltipBuilder(GTLMachines.GTL_ADD)
                     .appearanceBlock(() -> GTLFusionCasingBlock.getCasingState(tier))
                     .pattern((definition) -> {

@@ -1,5 +1,7 @@
 package org.gtlcore.gtlcore.utils;
 
+import org.gtlcore.gtlcore.api.recipe.RecipeResult;
+
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableMultiblockMachine;
@@ -12,12 +14,17 @@ import com.lowdragmc.lowdraglib.side.fluid.FluidStack;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.Objects;
 
+import static org.gtlcore.gtlcore.api.recipe.RecipeRunnerHelper.*;
+
 public class MachineUtil {
+
+    public static final BlockPos[] EMPTY_POS_ARRAY = new BlockPos[0];
 
     private MachineUtil() {
         throw new IllegalAccessError();
@@ -36,20 +43,24 @@ public class MachineUtil {
 
     public static boolean inputItem(WorkableMultiblockMachine machine, ItemStack item) {
         GTRecipe recipe = new GTRecipeBuilder(item.kjs$getIdLocation(), GTRecipeTypes.DUMMY_RECIPES).inputItems(item).buildRawRecipe();
-        if (recipe.matchRecipe(machine).isSuccess()) {
-            return recipe.handleRecipeIO(IO.IN, machine, machine.recipeLogic.getChanceCaches());
-        }
+        if (matchRecipeInputNocache(machine, recipe)) {
+            return handleRecipeInputNocache(machine, recipe);
+        } else RecipeResult.of(machine, RecipeResult.fail(Component.translatable("gtceu.recipe.fail.no.input.item", item.getDisplayName())));
         return false;
     }
 
     public static boolean outputItem(WorkableMultiblockMachine machine, ItemStack item) {
         if (!item.isEmpty()) {
             GTRecipe recipe = new GTRecipeBuilder(item.kjs$getIdLocation(), GTRecipeTypes.DUMMY_RECIPES).outputItems(item).buildRawRecipe();
-            if (recipe.matchRecipe(machine).isSuccess()) {
-                return recipe.handleRecipeIO(IO.OUT, machine, machine.recipeLogic.getChanceCaches());
+            if (matchRecipeOutput(machine, recipe)) {
+                return handleRecipeOutput(machine, recipe);
             }
         }
         return false;
+    }
+
+    public static boolean notConsumableItem(WorkableMultiblockMachine machine, ItemStack item) {
+        return new GTRecipeBuilder(item.kjs$getIdLocation(), GTRecipeTypes.DUMMY_RECIPES).inputItems(item).buildRawRecipe().matchRecipe(machine).isSuccess();
     }
 
     public static boolean notConsumableCircuit(WorkableMultiblockMachine machine, int configuration) {
@@ -59,8 +70,26 @@ public class MachineUtil {
 
     public static boolean inputFluid(WorkableMultiblockMachine machine, FluidStack fluid) {
         GTRecipe recipe = new GTRecipeBuilder(Objects.requireNonNull(ForgeRegistries.FLUIDS.getKey(fluid.getFluid())), GTRecipeTypes.DUMMY_RECIPES).inputFluids(fluid).buildRawRecipe();
-        if (recipe.matchRecipe(machine).isSuccess()) {
-            return recipe.handleRecipeIO(IO.IN, machine, machine.recipeLogic.getChanceCaches());
+        if (matchRecipeInputNocache(machine, recipe)) {
+            return handleRecipeInputNocache(machine, recipe);
+        } else RecipeResult.of(machine, RecipeResult.fail(Component.translatable("gtceu.recipe.fail.no.input.fluid", fluid.getDisplayName())));
+        return false;
+    }
+
+    public static boolean outputFluid(WorkableMultiblockMachine machine, FluidStack fluid) {
+        if (!fluid.isEmpty()) {
+            GTRecipe recipe = new GTRecipeBuilder(Objects.requireNonNull(ForgeRegistries.FLUIDS.getKey(fluid.getFluid())), GTRecipeTypes.DUMMY_RECIPES).outputFluids(fluid).buildRawRecipe();
+            if (matchRecipeOutput(machine, recipe)) {
+                return handleRecipeOutput(machine, recipe);
+            }
+        }
+        return false;
+    }
+
+    public static boolean inputEU(WorkableMultiblockMachine machine, long eu) {
+        GTRecipe recipe = new GTRecipeBuilder(GTCEu.id(String.valueOf(eu)), GTRecipeTypes.DUMMY_RECIPES).inputEU(eu).buildRawRecipe();
+        if (recipe.matchTickRecipe(machine).isSuccess()) {
+            return recipe.handleTickRecipeIO(IO.IN, machine, machine.recipeLogic.getChanceCaches());
         }
         return false;
     }

@@ -7,6 +7,8 @@ import com.gregtechceu.gtceu.common.data.GTMaterials;
 
 import net.minecraft.resources.ResourceLocation;
 
+import com.glodblock.github.extendedae.ExtendedAE;
+
 import java.util.function.Consumer;
 
 import static com.gregtechceu.gtceu.api.GTValues.VN;
@@ -80,5 +82,9 @@ public class RemoveRecipe {
                 consumer.accept(GTCEu.id("assembler/" + "dual_export_bus_" + VN[tier].toLowerCase() + "_" + fluidMap[j].getName()));
             }
         }
+
+        consumer.accept(ExtendedAE.id("assembler_matrix_frame"));
+        consumer.accept(ExtendedAE.id("assembler_matrix_wall"));
+        consumer.accept(ExtendedAE.id("assembler_matrix_glass"));
     }
 }

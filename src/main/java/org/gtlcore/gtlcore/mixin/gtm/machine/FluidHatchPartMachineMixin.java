@@ -22,8 +22,8 @@ public class FluidHatchPartMachineMixin extends TieredIOPartMachine {
     }
 
     /**
-     * @author
-     * @reason
+     * @author .
+     * @reason .
      */
     @Overwrite(remap = false)
     public static long getTankCapacity(long initialCapacity, int tier) {

@@ -1,10 +1,7 @@
 package org.gtlcore.gtlcore.common.data.machines;
 
 import org.gtlcore.gtlcore.GTLCore;
-import org.gtlcore.gtlcore.common.data.GTLBlocks;
-import org.gtlcore.gtlcore.common.data.GTLMachines;
-import org.gtlcore.gtlcore.common.data.GTLRecipeModifiers;
-import org.gtlcore.gtlcore.common.data.GTLRecipeTypes;
+import org.gtlcore.gtlcore.common.data.*;
 import org.gtlcore.gtlcore.common.machine.multiblock.electric.WorkableElectricParallelHatchMultipleRecipesMachine;
 import org.gtlcore.gtlcore.common.machine.multiblock.noenergy.PrimitiveOreMachine;
 import org.gtlcore.gtlcore.config.ConfigHolder;
@@ -28,8 +25,6 @@ import com.gregtechceu.gtceu.common.data.GTRecipeModifiers;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Blocks;
-
-import committee.nova.mods.avaritia.init.registry.ModBlocks;
 
 import static com.gregtechceu.gtceu.api.pattern.Predicates.blocks;
 import static com.gregtechceu.gtceu.api.pattern.Predicates.controller;
@@ -68,7 +63,7 @@ public class MultiBlockMachineB {
                             .or(Predicates.abilities(PartAbility.PARALLEL_HATCH).setExactLimit(1))
                             .or(Predicates.abilities(PartAbility.INPUT_LASER).setMaxGlobalLimited(1)))
                     .where("b", Predicates.blocks(GTLBlocks.INFINITY_GLASS.get()))
-                    .where("c", Predicates.blocks(ModBlocks.infinity.get()))
+                    .where("c", Predicates.blocks(ChemicalHelper.getBlock(TagPrefix.block, GTLMaterials.Infinity)))
                     .where("~", Predicates.controller(Predicates.blocks(definition.get())))
                     .where(" ", Predicates.any())
                     .build())
@@ -79,6 +74,7 @@ public class MultiBlockMachineB {
             .langValue("Dissolving Tank")
             .tooltips(Component.translatable("gtceu.multiblock.dissolving_tank.tooltip.0"))
             .tooltips(Component.translatable("gtceu.multiblock.parallelizable.tooltip"))
+            .tooltips(Component.translatable("tooltip.gtlcore.structure.source", "GTNH"))
             .tooltips(Component.translatable("gtceu.machine.available_recipe_map_1.tooltip",
                     Component.translatable("gtceu.dissolution_treatment")))
             .tooltipBuilder(GTLMachines.GTL_ADD)
@@ -108,6 +104,7 @@ public class MultiBlockMachineB {
     public final static MultiblockMachineDefinition DIGESTION_TANK = REGISTRATE.multiblock("digestion_tank", CoilWorkableElectricMultiblockMachine::new)
             .langValue("Digestion Tank")
             .tooltips(Component.translatable("gtceu.multiblock.parallelizable.tooltip"))
+            .tooltips(Component.translatable("tooltip.gtlcore.structure.source", "GTNH"))
             .tooltips(Component.translatable("gtceu.machine.available_recipe_map_1.tooltip",
                     Component.translatable("gtceu.digestion_treatment")))
             .tooltipBuilder(GTLMachines.GTL_ADD)
@@ -210,7 +207,7 @@ public class MultiBlockMachineB {
                     .where("P", Predicates.blocks(GTBlocks.CASING_BRONZE_PIPE.get()))
                     .where("G", Predicates.blocks(GTBlocks.HERMETIC_CASING_MV.get()))
                     .where("D", Predicates.blocks(GTBlocks.CASING_STAINLESS_CLEAN.get())
-                            .setMinGlobalLimited(40)
+                            .setMinGlobalLimited(36)
                             .or(Predicates.autoAbilities(definition.getRecipeTypes()))
                             .or(Predicates.autoAbilities(true, false, true)))
                     .where("L", Predicates.blocks(GTBlocks.COIL_KANTHAL.get()))
@@ -223,8 +220,8 @@ public class MultiBlockMachineB {
     public final static MultiblockMachineDefinition PRIMITIVE_VOID_ORE = ConfigHolder.INSTANCE.enablePrimitiveVoidOre ?
             REGISTRATE.multiblock("primitive_void_ore", PrimitiveOreMachine::new)
                     .langValue("Primitive Void Ore")
-                    .tooltips(Component.literal("运行时根据维度每tick随机产出一组任意粗矿"))
-                    .tooltips(Component.literal("支持主世界,下界,末地"))
+                    .tooltips(Component.translatable("tooltip.gtlcore.primitive_void_ore_random_output"))
+                    .tooltips(Component.translatable("tooltip.gtlcore.supports_dimensions"))
                     .tooltipBuilder(GTLMachines.GTL_ADD)
                     .rotationState(RotationState.ALL)
                     .recipeType(GTLRecipeTypes.PRIMITIVE_VOID_ORE_RECIPES)

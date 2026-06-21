@@ -109,12 +109,12 @@ dependencies {
     modCompileOnly("mezz.jei:jei-$project.minecraft_version-common-api:$project.jei_version") { transitive = false }
 
     modImplementation("com.gregtechceu.gtceu:gtceu-$project.minecraft_version:$project.gtceu_version") { transitive = false }
-   // modImplementation("dev:gtceu:1.20.1:$project.gtceu_version") { transitive false }
     modImplementation("com.lowdragmc.ldlib:ldlib-forge-$project.minecraft_version:$project.ldlib_version") { transitive = false }
     modImplementation("com.tterrag.registrate:Registrate:$project.registrate_version")
-    modImplementation("dev.latvian.mods:kubejs-forge:$project.kubejs_version")
+    modImplementation("curse.maven:kubejs-238086:5012072")
+    modImplementation("curse.maven:rhino-416294:6186971")
 
-    modImplementation("maven.modrinth:jade-1.20.1-forge-$project.jade_version")
+    modImplementation("curse.maven:jade-324717:6855440")
 
     // Mixin Extras
     implementation(annotationProcessor("io.github.llamalad7:mixinextras-common:$project.mixinextras_version"))
@@ -124,7 +124,7 @@ dependencies {
     compileOnly 'org.projectlombok:lombok:1.18.30'
     annotationProcessor 'org.projectlombok:lombok:1.18.30'
 
-    modImplementation 'appeng:appliedenergistics2-forge-15.2.1'
+    modImplementation('curse.maven:applied-energistics-2-223794:7148487')
 
     modImplementation("dev.architectury:architectury-forge:${project.architectury_version}")
 
@@ -137,10 +137,12 @@ dependencies {
     modImplementation("earth.terrarium.botarium:botarium-forge-${project.minecraft_version}:${project.botarium_version}")
     modImplementation("earth.terrarium.adastra:ad_astra-forge-${project.minecraft_version}:${ad_astra_version}") { transitive false }
 
-    modImplementation("dev:gtmthings-1.3.4")
-
+    modImplementation("dev:gtmthings-1.3.5.b")
+    modImplementation("curse.maven:spark-361579:4738952")
     modImplementation("curse.maven:glodium-957920:5006780")
-    modImplementation("dev:ExtendedAE-1.20-1.1.12-forge")
+    modImplementation("curse.maven:ex-pattern-provider-892005:7144417")
+    modImplementation("curse.maven:guideme-1173950:7127447")
+    modImplementation("dev:merequester-forge-1.20.1-1.1.5")
 
     modImplementation("org.moddingx:LibX:1.20.1-5.0.1")
     modImplementation("dev:TravelAnchors-1.20.1-5.0.1")
@@ -148,12 +150,12 @@ dependencies {
     modCompileOnly("dev:Re-Avaritia-forged-1.20.1-1.3.8.3")
 
     // ftb-chunk
-    modImplementation("dev.ftb.mods:ftb-chunks-forge:2001.3.1"){ transitive = false }
-    modRuntimeOnly("dev.ftb.mods:ftb-library-forge:2001.2.4"){ transitive = false }
-    modRuntimeOnly("dev.ftb.mods:ftb-teams-forge:2001.3.0"){ transitive = false }
+    modImplementation("curse.maven:ftb-chunks-314906:5378090"){ transitive = false }
+    modRuntimeOnly("curse.maven:ftb-library-404465:5567591"){ transitive = false }
+    modRuntimeOnly("curse.maven:ftb-teams-404468:5267190"){ transitive = false }
 
     // ftbu
-    modImplementation("dev.ftb.mods:ftb-ultimine-forge:2001.1.5"){ transitive = false }
+    modImplementation("curse.maven:ftb-ultimine-386134:5363345"){ transitive = false }
 
 
     modRuntimeOnly("mezz.jei:jei-$project.minecraft_version-forge:$project.jei_version") { transitive = false }
@@ -169,6 +171,8 @@ dependencies {
     // Modern UI core extensions
     modRuntimeOnly("icyllis.modernui:ModernUI-Forge:1.20.1-3.10.1.4") { transitive = false } // ModernUI
 
+    //Packet Fixer
+    include(modRuntimeOnly("curse.maven:packet-fixer-forge-689467:6195870"))
 }
 
 processResources {

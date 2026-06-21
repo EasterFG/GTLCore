@@ -2,6 +2,7 @@ package org.gtlcore.gtlcore.common.machine.multiblock.noenergy;
 
 import org.gtlcore.gtlcore.api.machine.multiblock.NoEnergyMultiblockMachine;
 import org.gtlcore.gtlcore.api.pattern.util.IValueContainer;
+import org.gtlcore.gtlcore.api.recipe.RecipeResult;
 import org.gtlcore.gtlcore.common.data.GTLRecipeModifiers;
 import org.gtlcore.gtlcore.common.machine.multiblock.part.NeutronAcceleratorPartMachine;
 import org.gtlcore.gtlcore.common.machine.multiblock.part.NeutronSensorPartMachine;
@@ -12,6 +13,7 @@ import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
 import com.gregtechceu.gtceu.api.machine.ConditionalSubscriptionHandler;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
+import com.gregtechceu.gtceu.api.machine.feature.IRecipeLogicMachine;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiPart;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.common.data.GTMaterials;
@@ -113,13 +115,18 @@ public class NeutronActivatorMachine extends NoEnergyMultiblockMachine {
 
     @Nullable
     public static GTRecipe recipeModifier(MetaMachine machine, @NotNull GTRecipe recipe) {
-        if (machine instanceof NeutronActivatorMachine nMachine &&
-                (nMachine.eV > recipe.data.getInt("ev_min") * 1000000 &&
-                        nMachine.eV < recipe.data.getInt("ev_max") * 1000000)) {
-            GTRecipe recipe1 = GTRecipeModifiers.accurateParallel(machine, recipe, GTLRecipeModifiers.getHatchParallel(nMachine), false)
-                    .getFirst();
-            recipe1.duration = (int) Math.round(Math.max(recipe1.duration * nMachine.getEfficiencyFactor(), 1));
-            return recipe1;
+        if (machine instanceof NeutronActivatorMachine nMachine) {
+            if (nMachine.eV > recipe.data.getInt("ev_min") * 1000000 &&
+                    nMachine.eV < recipe.data.getInt("ev_max") * 1000000) {
+                GTRecipe recipe1 = GTRecipeModifiers.accurateParallel(machine, recipe, GTLRecipeModifiers.getHatchParallel(nMachine), false)
+                        .getFirst();
+                recipe1.duration = (int) Math.round(Math.max(recipe1.duration * nMachine.getEfficiencyFactor(), 1));
+                return recipe1;
+            } else if (nMachine.eV < recipe.data.getInt("ev_min") * 1000000) {
+                RecipeResult.of((IRecipeLogicMachine) machine, RecipeResult.fail(Component.translatable("gtceu.recipe.fail.no.enough.neutron")));
+            } else if (nMachine.eV > recipe.data.getInt("ev_max") * 1000000) {
+                RecipeResult.of((IRecipeLogicMachine) machine, RecipeResult.fail(Component.translatable("gtceu.recipe.fail.too.much.neutron")));
+            }
         }
         return null;
     }
@@ -127,7 +134,11 @@ public class NeutronActivatorMachine extends NoEnergyMultiblockMachine {
     @Override
     public boolean beforeWorking(@Nullable GTRecipe recipe) {
         if (recipe != null) {
-            return eV >= recipe.data.getInt("evt") * 1000 * getEVtMultiplier();
+            if (eV >= recipe.data.getInt("evt") * 1000 * getEVtMultiplier()) return true;
+            else {
+                RecipeResult.of(this, RecipeResult.fail(Component.translatable("gtceu.recipe.fail.no.enough.eV.consumed")));
+                return false;
+            }
         }
         return false;
     }
@@ -139,8 +150,7 @@ public class NeutronActivatorMachine extends NoEnergyMultiblockMachine {
             int evt = (int) (getRecipeLogic().getLastRecipe().data.getInt("evt") *
                     1000 * getEVtMultiplier());
             if (eV < evt) {
-                getRecipeLogic().interruptRecipe();
-                return false;
+                getRecipeLogic().setProgress(0);
             } else {
                 eV -= evt;
             }

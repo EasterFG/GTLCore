@@ -64,8 +64,6 @@ public class Ae2BaseProcessingPattern {
     }
 
     public void setScale(int newScale, boolean div, long maxItemStack, long maxFluidStack) {
-        maxFluidStack = Math.min(maxFluidStack, 1000000L);
-        maxItemStack = Math.min(maxItemStack, 1000000L);
         useSetScale(newScale, div, maxItemStack, maxFluidStack);
     }
 

@@ -2,7 +2,6 @@ package org.gtlcore.gtlcore.common.machine.multiblock.generator;
 
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.capability.recipe.EURecipeCapability;
-import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.fluids.store.FluidStorageKeys;
 import com.gregtechceu.gtceu.api.gui.GuiTextures;
 import com.gregtechceu.gtceu.api.gui.fancy.TooltipsPanel;
@@ -36,6 +35,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 import javax.annotation.ParametersAreNonnullByDefault;
+
+import static org.gtlcore.gtlcore.api.recipe.RecipeRunnerHelper.*;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
@@ -106,7 +107,7 @@ public class ChemicalEnergyDevourerMachine extends WorkableElectricMultiblockMac
                                           @NotNull OCResult result) {
         if (machine instanceof ChemicalEnergyDevourerMachine engineMachine) {
             var EUt = RecipeHelper.getOutputEUt(recipe);
-            if (EUt > 0 && engineMachine.getLubricantRecipe().matchRecipe(engineMachine).isSuccess() &&
+            if (EUt > 0 && matchRecipe(engineMachine, engineMachine.getLubricantRecipe()) &&
                     !engineMachine.isIntakesObstructed()) {
                 var maxParallel = (int) (engineMachine.getOverclockVoltage() / EUt);
                 var parallelResult = GTRecipeModifiers.fastParallel(engineMachine, recipe, maxParallel, false);
@@ -134,7 +135,7 @@ public class ChemicalEnergyDevourerMachine extends WorkableElectricMultiblockMac
         boolean value = super.onWorking();
         val totalContinuousRunningTime = recipeLogic.getTotalContinuousRunningTime();
         if ((totalContinuousRunningTime == 1 || totalContinuousRunningTime % 72 == 0)) {
-            if (!getLubricantRecipe().handleRecipeIO(IO.IN, this, this.recipeLogic.getChanceCaches())) {
+            if (!handleRecipeInput(this, getLubricantRecipe())) {
                 recipeLogic.interruptRecipe();
                 return false;
             }
@@ -142,10 +143,10 @@ public class ChemicalEnergyDevourerMachine extends WorkableElectricMultiblockMac
         if ((totalContinuousRunningTime == 1 || totalContinuousRunningTime % 20 == 0) && isBoostAllowed()) {
             var boosterRecipe = getBoostRecipe();
             var boosterRecipea = getBoostRecipea();
-            this.isOxygenBoosted = boosterRecipe.matchRecipe(this).isSuccess() &&
-                    boosterRecipe.handleRecipeIO(IO.IN, this, this.recipeLogic.getChanceCaches());
-            this.isDinitrogenTetroxideBoosted = boosterRecipea.matchRecipe(this).isSuccess() &&
-                    boosterRecipea.handleRecipeIO(IO.IN, this, this.recipeLogic.getChanceCaches());
+            this.isOxygenBoosted = matchRecipe(this, boosterRecipe) &&
+                    handleRecipeInput(this, boosterRecipe);
+            this.isDinitrogenTetroxideBoosted = matchRecipe(this, boosterRecipea) &&
+                    handleRecipeInput(this, boosterRecipea);
         }
         return value;
     }

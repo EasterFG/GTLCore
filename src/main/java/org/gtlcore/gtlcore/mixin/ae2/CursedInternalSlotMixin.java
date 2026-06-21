@@ -1,6 +1,7 @@
 package org.gtlcore.gtlcore.mixin.ae2;
 
 import org.gtlcore.gtlcore.GTLCore;
+import org.gtlcore.gtlcore.integration.ae2.storage.FastInfinityCellInventory;
 import org.gtlcore.gtlcore.integration.ae2.storage.InfinityCellDataStorage;
 import org.gtlcore.gtlcore.integration.ae2.storage.InfinityCellInventory;
 
@@ -36,11 +37,22 @@ public abstract class CursedInternalSlotMixin {
         Slot i = slots.get(slotIndex);
         if (InfinityCellInventory.hasDiskUUID(i.getItem())) {
             InfinityCellDataStorage storage = GTLCore.STORAGE_INSTANCE
-                    .getOrCreateDisk(i.getItem().getOrCreateTag().getUUID("diskuuid"));
+                    .getOrCreateDisk(i.getItem().getOrCreateTag().getUUID("diskuuid"), false);
             ItemStack newStack = new ItemStack(i.getItem().getItem());
             UUID id = UUID.randomUUID();
             newStack.getOrCreateTag().putUUID("diskuuid", id);
-            newStack.getOrCreateTag().putLong("count", storage.itemCount);
+            newStack.getOrCreateTag().putLong("count", Double.doubleToLongBits(storage.totalAmount));
+            GTLCore.STORAGE_INSTANCE.updateDisk(id, storage);
+            newStack.setCount(newStack.getMaxStackSize());
+            setCarried(newStack);
+            ci.cancel();
+        } else if (FastInfinityCellInventory.hasDiskUUID(i.getItem())) {
+            InfinityCellDataStorage storage = GTLCore.STORAGE_INSTANCE
+                    .getOrCreateDisk(i.getItem().getOrCreateTag().getUUID("diskuuid"), true);
+            ItemStack newStack = new ItemStack(i.getItem().getItem());
+            UUID id = UUID.randomUUID();
+            newStack.getOrCreateTag().putUUID("diskuuid", id);
+            newStack.getOrCreateTag().putLong("count", Double.doubleToLongBits(storage.totalAmount));
             GTLCore.STORAGE_INSTANCE.updateDisk(id, storage);
             newStack.setCount(newStack.getMaxStackSize());
             setCarried(newStack);

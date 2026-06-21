@@ -20,7 +20,8 @@ import org.jetbrains.annotations.NotNull;
  * @author EasterFG on 2024/10/17
  */
 @MethodsReturnNonnullByDefault
-public class GravityCleaningConfigurationMaintenancePartMachine extends AutoConfigurationMaintenanceHatchPartMachine implements IGravityPartMachine {
+public class GravityCleaningConfigurationMaintenancePartMachine extends AutoConfigurationMaintenanceHatchPartMachine
+                                                                implements IAutoConfiguratioGravityPart {
 
     @Persisted
     private int gravity = 0;

@@ -1,9 +1,11 @@
 package org.gtlcore.gtlcore.common.recipe.condition;
 
+import org.gtlcore.gtlcore.api.recipe.RecipeResult;
 import org.gtlcore.gtlcore.common.data.GTLRecipeConditions;
 import org.gtlcore.gtlcore.common.machine.multiblock.part.maintenance.IGravityPartMachine;
 
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
+import com.gregtechceu.gtceu.api.machine.feature.IRecipeLogicMachine;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiPart;
 import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
 import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
@@ -61,7 +63,9 @@ public class GravityCondition extends RecipeCondition {
         if (machine instanceof MultiblockControllerMachine controllerMachine) {
             for (IMultiPart part : controllerMachine.self().getParts()) {
                 if (part instanceof IGravityPartMachine gravityPart) {
-                    return gravityPart.getCurrentGravity() == (zero ? 0 : 100);
+                    if (gravityPart.getCurrentGravity() == (zero ? 0 : 100)) return true;
+                    else RecipeResult.of((IRecipeLogicMachine) machine,
+                            RecipeResult.fail(Component.translatable("gtceu.recipe.fail.gravity" + (zero ? ".low" : ".power"))));
                 }
             }
         }

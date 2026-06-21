@@ -18,7 +18,6 @@ import com.gregtechceu.gtceu.common.data.GTBlocks;
 import com.gregtechceu.gtceu.common.data.GTItems;
 import com.gregtechceu.gtceu.common.data.GTMachines;
 import com.gregtechceu.gtceu.common.data.GTMaterials;
-import com.gregtechceu.gtceu.common.data.machines.GTAEMachines;
 import com.gregtechceu.gtceu.common.data.machines.GTResearchMachines;
 import com.gregtechceu.gtceu.data.recipe.CustomTags;
 import com.gregtechceu.gtceu.data.recipe.VanillaRecipeHelper;
@@ -217,6 +216,14 @@ public class MachineRecipe {
                 "SGS", "GHG", "SGS", 'H', GTMachines.HULL[GTValues.UEV].asStack(), 'G',
                 new UnificationEntry(TagPrefix.gear, GTLMaterials.AstralTitanium), 'S',
                 new UnificationEntry(TagPrefix.gearSmall, GTLMaterials.Quantanium));
+        VanillaRecipeHelper.addShapedRecipe(provider, true, GTLCore.id("ultimate_terminal"),
+                GTLItems.ULTIMATE_TERMINAL.asStack(),
+                "ABA", "CDC", "CEC",
+                'A', new UnificationEntry(TagPrefix.screw, GTMaterials.BlackBronze),
+                'B', net.minecraftforge.common.Tags.Items.GLASS_PANES,
+                'C', new UnificationEntry(TagPrefix.plate, GTMaterials.Silicon),
+                'D', CustomItems.ADVANCED_TERMINAL.asStack(),
+                'E', CustomTags.MV_CIRCUITS);
         registerMachineRecipe(provider, ArrayUtils.subarray(GTMachines.TRANSFORMER, GTValues.UHV, GTValues.MAX),
                 "WCC",
                 "TH ", "WCC", 'W', POWER_COMPONENT, 'C', CABLE, 'T', CABLE_TIER_UP, 'H', HULL);
@@ -619,8 +626,8 @@ public class MachineRecipe {
 
         ASSEMBLER_RECIPES
                 .recipeBuilder(GTLCore.id("heat_sensor"))
-                .inputItems(GTAEMachines.STOCKING_IMPORT_BUS_ME, 2)
-                .inputItems(GTAEMachines.STOCKING_IMPORT_HATCH_ME, 2)
+                .inputItems(GTLMachines.GTAEMachines.STOCKING_IMPORT_BUS_ME, 2)
+                .inputItems(GTLMachines.GTAEMachines.STOCKING_IMPORT_HATCH_ME, 2)
                 .inputItems(CIRCUIT.getIngredient(IV))
                 .inputFluids(GTMaterials.SolderingAlloy.getFluid(1440))
                 .outputItems(GTLMachines.ME_DUAL_HATCH_STOCK_PART_MACHINE)

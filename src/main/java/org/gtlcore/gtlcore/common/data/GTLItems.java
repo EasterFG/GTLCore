@@ -1,6 +1,7 @@
 package org.gtlcore.gtlcore.common.data;
 
 import org.gtlcore.gtlcore.common.item.*;
+import org.gtlcore.gtlcore.integration.ae2.FastInfinityCell;
 import org.gtlcore.gtlcore.integration.ae2.InfinityCell;
 import org.gtlcore.gtlcore.utils.TextUtil;
 
@@ -12,6 +13,7 @@ import com.gregtechceu.gtceu.common.data.GTItems;
 import com.gregtechceu.gtceu.common.item.CoverPlaceBehavior;
 import com.gregtechceu.gtceu.common.item.TooltipBehavior;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 
@@ -106,6 +108,7 @@ public class GTLItems {
 
     public static final ItemEntry<InfinityCell> ITEM_INFINITY_CELL = REGISTRATE.item("item_infinity_cell", p -> new InfinityCell(AEKeyType.items())).register();
     public static final ItemEntry<InfinityCell> FLUID_INFINITY_CELL = REGISTRATE.item("fluid_infinity_cell", p -> new InfinityCell(AEKeyType.fluids())).register();
+    public static final ItemEntry<FastInfinityCell> FAST_INFINITY_CELL = REGISTRATE.item("fast_infinity_cell", p -> new FastInfinityCell()).register();
 
     public static void InitUpgrades() {
         String storageCellGroup = GuiText.StorageCells.getTranslationKey();
@@ -145,21 +148,21 @@ public class GTLItems {
     public static ItemEntry<ComponentItem> REALLY_ULTIMATE_BATTERY = REGISTRATE
             .item("really_max_battery", ComponentItem::create)
             .onRegister(
-                    attach(new TooltipBehavior(lines -> lines.add(Component.literal("§7填满就能通关GregTechCEu Modern")))))
+                    attach(new TooltipBehavior(lines -> lines.add(Component.translatable("tooltip.gtlcore.complete_gtceu_modern").withStyle(ChatFormatting.GRAY)))))
             .onRegister(modelPredicate(GTCEu.id("battery"), ElectricStats::getStoredPredicate))
             .onRegister(attach(ElectricStats.createRechargeableBattery(Long.MAX_VALUE, GTValues.UEV)))
             .register();
     public static ItemEntry<ComponentItem> TRANSCENDENT_ULTIMATE_BATTERY = REGISTRATE
             .item("transcendent_max_battery", ComponentItem::create)
             .onRegister(
-                    attach(new TooltipBehavior(lines -> lines.add(Component.literal("§7填满就能通关GregTech Leisure")))))
+                    attach(new TooltipBehavior(lines -> lines.add(Component.translatable("tooltip.gtlcore.complete_gt_leisure").withStyle(ChatFormatting.GRAY)))))
             .onRegister(modelPredicate(GTCEu.id("battery"), ElectricStats::getStoredPredicate))
             .onRegister(attach(ElectricStats.createRechargeableBattery(Long.MAX_VALUE, GTValues.UIV)))
             .register();
     public static ItemEntry<ComponentItem> EXTREMELY_ULTIMATE_BATTERY = REGISTRATE
             .item("extremely_max_battery", ComponentItem::create)
             .onRegister(
-                    attach(new TooltipBehavior(lines -> lines.add(Component.literal("§7有生之年将它填满")))))
+                    attach(new TooltipBehavior(lines -> lines.add(Component.translatable("tooltip.gtlcore.fill_in_lifetime").withStyle(ChatFormatting.GRAY)))))
             .onRegister(modelPredicate(GTCEu.id("battery"), ElectricStats::getStoredPredicate))
             .onRegister(attach(ElectricStats.createRechargeableBattery(Long.MAX_VALUE, GTValues.UXV)))
             .register();
@@ -167,7 +170,7 @@ public class GTLItems {
             .item("insanely_max_battery", ComponentItem::create)
             .onRegister(
                     attach(new TooltipBehavior(
-                            lines -> lines.add(Component.literal(TextUtil.dark_purplish_red("填满也就图一乐"))))))
+                            lines -> lines.add(Component.literal(TextUtil.dark_purplish_red(Component.translatable("tooltip.gtlcore.fill_for_fun").getString()))))))
             .onRegister(modelPredicate(GTCEu.id("battery"), ElectricStats::getStoredPredicate))
             .onRegister(attach(ElectricStats.createRechargeableBattery(Long.MAX_VALUE, GTValues.OpV)))
             .register();
@@ -175,7 +178,7 @@ public class GTLItems {
             .item("mega_max_battery", ComponentItem::create)
             .onRegister(
                     attach(new TooltipBehavior(
-                            lines -> lines.add(Component.literal(TextUtil.full_color("填满电池 机械飞升"))))))
+                            lines -> lines.add(Component.literal(TextUtil.full_color(Component.translatable("tooltip.gtlcore.fill_battery_ascension").getString()))))))
             .onRegister(modelPredicate(GTCEu.id("battery"), ElectricStats::getStoredPredicate))
             .onRegister(attach(ElectricStats.createRechargeableBattery(Long.MAX_VALUE, GTValues.MAX)))
             .register();
@@ -280,6 +283,19 @@ public class GTLItems {
             .item("structure_detect", ComponentItem::create)
             .properties(stack -> stack.stacksTo(1))
             .onRegister(attach(StructureDetectBehavior.INSTANCE))
+            .model(NonNullBiConsumer.noop())
+            .register();
+
+    public static ItemEntry<ComponentItem> ULTIMATE_TERMINAL = REGISTRATE
+            .item("ultimate_terminal", ComponentItem::create)
+            .properties((p) -> p.stacksTo(1))
+            .onRegister(GTItems.attach(new UltimateTerminalBehavior()))
+            .register();
+
+    public static ItemEntry<ComponentItem> ME_PATTERN_BUFFER_COPY = REGISTRATE
+            .item("me_pattern_buffer_copy", ComponentItem::create)
+            .properties(stack -> stack.stacksTo(1))
+            .onRegister(attach(MEPatternBufferCopyBehavior.INSTANCE))
             .model(NonNullBiConsumer.noop())
             .register();
 

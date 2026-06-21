@@ -3,8 +3,11 @@ package org.gtlcore.gtlcore.common.machine.multiblock.part.maintenance;
 import com.gregtechceu.gtceu.api.gui.GuiTextures;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMaintenanceMachine;
+import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiController;
 import com.gregtechceu.gtceu.api.machine.multiblock.part.MultiblockPartMachine;
 import com.gregtechceu.gtceu.api.machine.multiblock.part.TieredPartMachine;
+import com.gregtechceu.gtceu.api.recipe.GTRecipe;
+import com.gregtechceu.gtceu.config.ConfigHolder;
 
 import com.lowdragmc.lowdraglib.gui.widget.ComponentPanelWidget;
 import com.lowdragmc.lowdraglib.gui.widget.DraggableScrollableWidgetGroup;
@@ -19,6 +22,7 @@ import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.Style;
 
 import lombok.Getter;
+import org.jetbrains.annotations.NotNull;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -29,7 +33,8 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @Getter
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-public class AutoConfigurationMaintenanceHatchPartMachine extends TieredPartMachine implements IMaintenanceMachine {
+public class AutoConfigurationMaintenanceHatchPartMachine extends TieredPartMachine
+                                                          implements IMaintenanceMachine, IAutoConfigurationMaintenanceHatch {
 
     protected static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(
             AutoConfigurationMaintenanceHatchPartMachine.class, MultiblockPartMachine.MANAGED_FIELD_HOLDER);
@@ -38,6 +43,7 @@ public class AutoConfigurationMaintenanceHatchPartMachine extends TieredPartMach
     private static final float MIN_DURATION_MULTIPLIER = 0.2f;
     private static final float DURATION_ACTION_AMOUNT = 0.01f;
     @Persisted
+    @Getter
     private float durationMultiplier = 1f;
 
     public AutoConfigurationMaintenanceHatchPartMachine(IMachineBlockEntity metaTileEntityId) {
@@ -95,6 +101,21 @@ public class AutoConfigurationMaintenanceHatchPartMachine extends TieredPartMach
                 .floatValue();
     }
 
+    @Override
+    public GTRecipe modifyRecipe(GTRecipe recipe) {
+        if (ConfigHolder.INSTANCE.machines.enableMaintenance) {
+            if (this.hasMaintenanceProblems()) {
+                return null;
+            }
+            float durationMultiplier = this.getDurationMultiplier();
+            if (durationMultiplier != 1.0F) {
+                recipe = recipe.copy();
+                recipe.duration = (int) Math.max(1, recipe.duration * durationMultiplier);
+            }
+        }
+        return recipe;
+    }
+
     private void incInternalMultiplier(int multiplier) {
         float newDurationMultiplier = durationMultiplier + DURATION_ACTION_AMOUNT * multiplier;
         if (newDurationMultiplier >= MAX_DURATION_MULTIPLIER) {
@@ -111,6 +132,18 @@ public class AutoConfigurationMaintenanceHatchPartMachine extends TieredPartMach
             return;
         }
         durationMultiplier = newDurationMultiplier;
+    }
+
+    @Override
+    public void addedToController(@NotNull IMultiController controller) {
+        super.addedToController(controller);
+        ICleaningRoom.addedToController(controller, null);
+    }
+
+    @Override
+    public void removedFromController(@NotNull IMultiController controller) {
+        super.removedFromController(controller);
+        ICleaningRoom.removedFromController(controller, null);
     }
 
     @Override
@@ -150,5 +183,12 @@ public class AutoConfigurationMaintenanceHatchPartMachine extends TieredPartMach
         }
         return Component.translatable("gtceu.maintenance.configurable_" + "duration", multiplier.get())
                 .setStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, tooltip)));
+    }
+
+    @Override
+    public void setDurationMultiplier(float count) {
+        if (count > MAX_DURATION_MULTIPLIER) durationMultiplier = MAX_DURATION_MULTIPLIER;
+        else if (count < MIN_DURATION_MULTIPLIER) durationMultiplier = MIN_DURATION_MULTIPLIER;
+        else durationMultiplier = count;
     }
 }

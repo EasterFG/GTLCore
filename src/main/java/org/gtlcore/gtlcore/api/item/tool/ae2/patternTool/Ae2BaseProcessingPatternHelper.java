@@ -23,7 +23,7 @@ public class Ae2BaseProcessingPatternHelper {
     public static ItemStack multiplyScale(int scale, boolean div, AEProcessingPattern patternDetail, long maxItemStack, long maxFluidStack) {
         var input = patternDetail.getSparseInputs();
         var output = patternDetail.getOutputs();
-        if (checkModify(input, scale, div, maxItemStack, maxFluidStack) && checkModify(output, scale, div, 10000000L, 1000000L)) {
+        if (checkModify(input, scale, div, maxItemStack, maxFluidStack) && checkModify(output, scale, div, maxItemStack, maxFluidStack)) {
             var mulInput = new GenericStack[input.length];
             var mulOutput = new GenericStack[output.length];
             modifyStacks(input, mulInput, scale, div);

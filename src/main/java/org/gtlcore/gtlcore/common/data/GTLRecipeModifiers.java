@@ -1,16 +1,19 @@
 package org.gtlcore.gtlcore.common.data;
 
+import org.gtlcore.gtlcore.api.machine.trait.IRecipeCapabilityMachine;
+import org.gtlcore.gtlcore.api.machine.trait.MEPatternRecipeHandlePart;
+import org.gtlcore.gtlcore.api.machine.trait.RecipeHandlePart;
+import org.gtlcore.gtlcore.api.recipe.RecipeResult;
 import org.gtlcore.gtlcore.common.machine.multiblock.electric.StorageMachine;
 import org.gtlcore.gtlcore.common.machine.multiblock.steam.LargeSteamParallelMultiblockMachine;
 
-import com.gregtechceu.gtceu.api.capability.IParallelHatch;
 import com.gregtechceu.gtceu.api.capability.recipe.EURecipeCapability;
 import com.gregtechceu.gtceu.api.capability.recipe.FluidRecipeCapability;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.feature.IOverclockMachine;
+import com.gregtechceu.gtceu.api.machine.feature.IRecipeLogicMachine;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiController;
-import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiPart;
 import com.gregtechceu.gtceu.api.machine.multiblock.CoilWorkableElectricMultiblockMachine;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableElectricMultiblockMachine;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
@@ -25,11 +28,14 @@ import com.gregtechceu.gtceu.common.data.GTRecipeModifiers;
 
 import com.lowdragmc.lowdraglib.side.fluid.FluidStack;
 
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.level.material.Fluid;
+
+import it.unimi.dsi.fastutil.objects.Object2LongMaps;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 public class GTLRecipeModifiers {
 
@@ -72,55 +78,54 @@ public class GTLRecipeModifiers {
     public static GTRecipe nanoForgeOverclock(MetaMachine machine, @NotNull GTRecipe recipe, @NotNull OCParams params,
                                               @NotNull OCResult result, int tier) {
         if (machine instanceof StorageMachine storageMachine) {
+            int t = recipe.data.getInt("nano_forge_tier");
+            if (t > tier) {
+                RecipeResult.of((IRecipeLogicMachine) machine,
+                        RecipeResult.fail(Component.translatable("gtceu.recipe.fail.nano_forge.tier")));
+                return null;
+            }
             if (tier == 1) {
-                if (recipe.data.getInt("nano_forge_tier") > 1 && !Objects.equals(storageMachine.getMachineStorageItem().kjs$getId(), "gtceu:carbon_nanoswarm")) {
+                if (!Objects.equals(storageMachine.getMachineStorageItem().kjs$getId(), "gtceu:carbon_nanoswarm")) {
+                    RecipeResult.of((IRecipeLogicMachine) machine,
+                            RecipeResult.fail(Component.translatable("message.gtlcore.need_carbon_nano_swarm")));
                     return null;
                 }
             } else if (tier == 2) {
-                if (recipe.data.getInt("nano_forge_tier") > 2 && !Objects.equals(storageMachine.getMachineStorageItem().kjs$getId(), "gtceu:neutronium_nanoswarm")) {
+                if (!Objects.equals(storageMachine.getMachineStorageItem().kjs$getId(), "gtceu:neutronium_nanoswarm")) {
+                    RecipeResult.of((IRecipeLogicMachine) machine,
+                            RecipeResult.fail(Component.translatable("message.gtlcore.need_neutronium_nano_swarm")));
                     return null;
                 }
             } else if (tier == 3) {
                 if (!Objects.equals(storageMachine.getMachineStorageItem().kjs$getId(), "gtceu:draconium_nanoswarm")) {
+                    RecipeResult.of((IRecipeLogicMachine) machine,
+                            RecipeResult.fail(Component.translatable("message.gtlcore.need_dragon_nano_swarm")));
                     return null;
                 }
             }
-            GTRecipe recipe1 = GTRecipeModifiers.accurateParallel(machine, recipe, (int) (storageMachine.getMachineStorageItem().getCount() * Math.pow(2, tier - recipe.data.getInt("nano_forge_tier"))), false).getFirst();
-            return RecipeHelper.applyOverclock(new OverclockingLogic(1 / Math.pow(2, 1 + tier - recipe.data.getInt("nano_forge_tier")), 4, false), recipe1, storageMachine.getOverclockVoltage(), params, result);
+            GTRecipe recipe1 = GTRecipeModifiers.accurateParallel(machine, recipe, (int) (storageMachine.getMachineStorageItem().getCount() * Math.pow(2, tier - t)), false).getFirst();
+            return RecipeHelper.applyOverclock(new OverclockingLogic(1 / Math.pow(2, 1 + tier - t), 4, false), recipe1, storageMachine.getOverclockVoltage(), params, result);
         }
         return null;
     }
 
     public static GTRecipe dissolvingTankOverclock(MetaMachine machine, @NotNull GTRecipe recipe, @NotNull OCParams params,
                                                    @NotNull OCResult result) {
-        if (machine instanceof WorkableElectricMultiblockMachine workableElectricMultiblockMachine) {
+        if (machine instanceof WorkableElectricMultiblockMachine workmachine) {
             List<Content> fluidList = recipe.inputs.getOrDefault(FluidRecipeCapability.CAP, null);
             FluidStack fluidStack1 = FluidRecipeCapability.CAP.of(fluidList.get(0).getContent()).getStacks()[0];
             FluidStack fluidStack2 = FluidRecipeCapability.CAP.of(fluidList.get(1).getContent()).getStacks()[0];
-            long a = 0, b = 0;
-            for (IMultiPart part : workableElectricMultiblockMachine.getParts()) {
-                for (var handler : part.getRecipeHandlers()) {
-                    if (handler.getHandlerIO() == IO.IN) {
-                        for (Object contents : handler.getContents()) {
-                            if (contents instanceof FluidStack fluidStack) {
-                                if (fluidStack.getFluid() == fluidStack1.getFluid()) {
-                                    a += fluidStack.getAmount();
-                                }
-                                if (fluidStack.getFluid() == fluidStack2.getFluid()) {
-                                    b += fluidStack.getAmount();
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+
+            FluidAmounts amounts = countFluidAmounts(workmachine, recipe, fluidStack1.getFluid(), fluidStack2.getFluid());
+            long a = amounts.first(), b = amounts.second();
             if (b == 0) return null;
             GTRecipe hatchedParallel = GTRecipeModifiers.hatchParallel(machine, recipe, false, params, result);
             if (hatchedParallel == null) return null;
-            GTRecipe recipe1 = RecipeHelper.applyOverclock(OverclockingLogic.NON_PERFECT_OVERCLOCK_SUBTICK, hatchedParallel, workableElectricMultiblockMachine.getOverclockVoltage(), params, result);
+            GTRecipe recipe1 = RecipeHelper.applyOverclock(OverclockingLogic.NON_PERFECT_OVERCLOCK_SUBTICK, hatchedParallel, workmachine.getOverclockVoltage(), params, result);
             if (a / b != fluidStack1.getAmount() / fluidStack2.getAmount()) {
+                RecipeResult.ofWorking((IRecipeLogicMachine) machine, RecipeResult.fail(Component.translatable("gtceu.recipe.fail.no.ratio")));
                 recipe1.outputs.clear();
-            }
+            } else RecipeResult.ofWorking((IRecipeLogicMachine) machine, RecipeResult.SUCCESS);
             return recipe1;
         }
         return null;
@@ -148,13 +153,9 @@ public class GTLRecipeModifiers {
     }
 
     public static int getHatchParallel(MetaMachine machine) {
-        if (machine instanceof IMultiController controller && controller.isFormed()) {
-            Optional<IParallelHatch> optional = controller.getParts().stream().filter(IParallelHatch.class::isInstance)
-                    .map(IParallelHatch.class::cast).findAny();
-            if (optional.isPresent()) {
-                IParallelHatch hatch = optional.get();
-                return hatch.getCurrentParallel();
-            }
+        if (machine instanceof IMultiController controller && controller.isFormed() && controller instanceof IRecipeCapabilityMachine recipeCapabilityMachine) {
+            final var parallelHatch = recipeCapabilityMachine.getParallelHatch();
+            if (parallelHatch != null) return parallelHatch.getCurrentParallel();
         }
         return 1;
     }
@@ -183,4 +184,71 @@ public class GTLRecipeModifiers {
                 List.of(new Content((long) resultVoltage, ChanceLogic.getMaxChancedValue(), ChanceLogic.getMaxChancedValue(), 0, null, null)));
         return recipe1;
     }
+
+    private static FluidAmounts countFluidAmounts(WorkableElectricMultiblockMachine workmachine, GTRecipe recipe, Fluid fluid1, Fluid fluid2) {
+        long a = 0, b = 0;
+
+        if (workmachine instanceof IRecipeCapabilityMachine rcm) {
+            var handlePart = rcm.getActiveRecipeHandle(recipe);
+            if (handlePart != null) {
+                if (handlePart instanceof RecipeHandlePart rhp) {
+                    FluidAmounts amounts = countFluidInRecipeHandlePart(rhp, fluid1, fluid2);
+                    a += amounts.first();
+                    b += amounts.second();
+                } else if (handlePart instanceof MEPatternRecipeHandlePart meRhp) {
+                    FluidAmounts amounts = countFluidInMERecipeHandlePart(meRhp, recipe, fluid1, fluid2);
+                    a += amounts.first();
+                    b += amounts.second();
+                }
+            } else {
+                FluidAmounts amounts = countFluidInParts(workmachine, fluid1, fluid2);
+                a += amounts.first();
+                b += amounts.second();
+            }
+        }
+
+        return new FluidAmounts(a, b);
+    }
+
+    private static FluidAmounts countFluidInRecipeHandlePart(RecipeHandlePart rhp, Fluid fluid1, Fluid fluid2) {
+        long a = 0, b = 0;
+        for (var p : rhp.getCapability(FluidRecipeCapability.CAP)) {
+            for (var contents : p.getContents()) {
+                if (contents instanceof FluidStack fluidStack) {
+                    if (fluidStack.getFluid() == fluid1) a += fluidStack.getAmount();
+                    if (fluidStack.getFluid() == fluid2) b += fluidStack.getAmount();
+                }
+            }
+        }
+        return new FluidAmounts(a, b);
+    }
+
+    private static FluidAmounts countFluidInMERecipeHandlePart(MEPatternRecipeHandlePart meRhp, GTRecipe recipe, Fluid fluid1, Fluid fluid2) {
+        long a = 0, b = 0;
+        for (var it = Object2LongMaps.fastIterator(meRhp.getMEContent(FluidRecipeCapability.CAP, recipe)); it.hasNext();) {
+            var entry = it.next();
+            if (fluid1 == entry.getKey().getFluid()) a += entry.getLongValue();
+            if (fluid2 == entry.getKey().getFluid()) b += entry.getLongValue();
+        }
+        return new FluidAmounts(a, b);
+    }
+
+    private static FluidAmounts countFluidInParts(WorkableElectricMultiblockMachine workMachine, Fluid fluid1, Fluid fluid2) {
+        long a = 0, b = 0;
+        for (var part : workMachine.getParts()) {
+            for (var handler : part.getRecipeHandlers()) {
+                if (handler.getHandlerIO() == IO.IN) {
+                    for (var contents : handler.getContents()) {
+                        if (contents instanceof FluidStack fluidStack) {
+                            if (fluidStack.getFluid() == fluid1) a += fluidStack.getAmount();
+                            if (fluidStack.getFluid() == fluid2) b += fluidStack.getAmount();
+                        }
+                    }
+                }
+            }
+        }
+        return new FluidAmounts(a, b);
+    }
+
+    private record FluidAmounts(long first, long second) {}
 }

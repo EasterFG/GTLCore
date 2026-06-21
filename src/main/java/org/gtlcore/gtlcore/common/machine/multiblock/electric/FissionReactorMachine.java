@@ -153,7 +153,7 @@ public class FissionReactorMachine extends WorkableElectricMultiblockMachine imp
     }
 
     private boolean inputWater(long amount) {
-        boolean value = MachineIO.inputFluid(this, GTMaterials.DistilledWater.getFluid(amount * 800));
+        boolean value = MachineUtil.inputFluid(this, GTMaterials.DistilledWater.getFluid(amount * 800));
         double steamMultiplier = heat > 373 ? 160 : 160 / Math.pow(1.4, 373 - heat);
         if (value)
             value = MachineIO.outputFluid(this, GTMaterials.Steam.getFluid((long) (amount * 800 * steamMultiplier)));
@@ -161,7 +161,7 @@ public class FissionReactorMachine extends WorkableElectricMultiblockMachine imp
     }
 
     private boolean inputSodiumPotassium(long amount) {
-        boolean value = MachineIO.inputFluid(this, GTMaterials.SodiumPotassium.getFluid(amount * 20));
+        boolean value = MachineUtil.inputFluid(this, GTMaterials.SodiumPotassium.getFluid(amount * 20));
         if (heat > 825) {
             if (value)
                 value = MachineIO.outputFluid(this, GTLMaterials.SupercriticalSodiumPotassium.getFluid(amount * 20));

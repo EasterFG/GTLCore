@@ -1,14 +1,19 @@
 package org.gtlcore.gtlcore.data.recipe;
 
+import org.gtlcore.gtlcore.GTLCore;
 import org.gtlcore.gtlcore.common.data.GTLItems;
+import org.gtlcore.gtlcore.common.data.GTLMachines;
+import org.gtlcore.gtlcore.common.data.machines.AdditionalMultiBlockMachine;
 import org.gtlcore.gtlcore.common.data.machines.AdvancedMultiBlockMachine;
 import org.gtlcore.gtlcore.common.recipe.condition.GravityCondition;
 import org.gtlcore.gtlcore.config.ConfigHolder;
+import org.gtlcore.gtlcore.utils.Registries;
 
 import com.gregtechceu.gtceu.api.data.chemical.material.stack.UnificationEntry;
 import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
 import com.gregtechceu.gtceu.api.machine.multiblock.CleanroomType;
-import com.gregtechceu.gtceu.common.data.GTMaterials;
+import com.gregtechceu.gtceu.common.data.*;
+import com.gregtechceu.gtceu.data.recipe.CustomTags;
 import com.gregtechceu.gtceu.data.recipe.VanillaRecipeHelper;
 
 import net.minecraft.data.recipes.FinishedRecipe;
@@ -16,14 +21,19 @@ import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
 
+import appeng.api.util.AEColor;
+import appeng.core.definitions.AEBlocks;
+
 import java.util.function.Consumer;
 
+import static appeng.core.definitions.AEItems.*;
+import static com.glodblock.github.extendedae.common.EPPItemAndBlock.*;
 import static com.gregtechceu.gtceu.api.GTValues.*;
 import static com.gregtechceu.gtceu.api.data.tag.TagPrefix.*;
 import static com.gregtechceu.gtceu.common.data.GTItems.*;
 import static com.gregtechceu.gtceu.common.data.GTMaterials.*;
 import static com.gregtechceu.gtceu.common.data.GTRecipeTypes.*;
-import static org.gtlcore.gtlcore.common.data.GTLMaterials.WaterAgarMix;
+import static org.gtlcore.gtlcore.common.data.GTLMaterials.*;
 import static org.gtlcore.gtlcore.common.data.GTLRecipeTypes.*;
 import static org.gtlcore.gtlcore.common.data.machines.MultiBlockMachineB.PRIMITIVE_VOID_ORE;
 
@@ -32,6 +42,32 @@ public class Misc {
     public static void init(Consumer<FinishedRecipe> provider) {
         VanillaRecipeHelper.addShapelessRecipe(provider, "structure_detect", GTLItems.STRUCTURE_DETECT.asStack(),
                 "A", Items.PAPER);
+        VanillaRecipeHelper.addShapelessRecipe(provider, GTLCore.id("me_pattern_buffer_copy"),
+                GTLItems.ME_PATTERN_BUFFER_COPY.asStack(),
+                "A", MEMORY_CARD);
+        VanillaRecipeHelper.addShapedRecipe(provider, true, GTLCore.id("heat_sensor"),
+                GTLMachines.HEAT_SENSOR.asStack(),
+                "FDF", "BAB", "CEC",
+                'A', GTMachines.HULL[12].asStack(),
+                'B', new UnificationEntry(wireFine, EnrichedNaquadahTriniumEuropiumDuranide),
+                'C', SENSOR_ZPM.asStack(),
+                'D', Registries.getItemStack("gtceu:advanced_activity_detector_cover"),
+                'E', Registries.getItemStack("gtceu:computer_monitor_cover"),
+                'F', CustomTags.UV_CIRCUITS);
+        VanillaRecipeHelper.addShapedRecipe(provider, true, GTLCore.id("fast_infinity_cell_0"),
+                GTLItems.FAST_INFINITY_CELL.asStack(),
+                "AAA", "BCD", "AAA",
+                'A', QUANTUM_ENTANGLED_SINGULARITY.stack(),
+                'B', GTLItems.ITEM_INFINITY_CELL.asStack(),
+                'C', ZERO_POINT_MODULE.asStack(),
+                'D', GTLItems.FLUID_INFINITY_CELL.asStack());
+        VanillaRecipeHelper.addShapedRecipe(provider, true, GTLCore.id("fast_infinity_cell_1"),
+                GTLItems.FAST_INFINITY_CELL.asStack(),
+                "AAA", "DCB", "AAA",
+                'A', QUANTUM_ENTANGLED_SINGULARITY.stack(),
+                'B', GTLItems.ITEM_INFINITY_CELL.asStack(),
+                'C', ZERO_POINT_MODULE.asStack(),
+                'D', GTLItems.FLUID_INFINITY_CELL.asStack());
         if (ConfigHolder.INSTANCE.enablePrimitiveVoidOre) {
             VanillaRecipeHelper.addShapedRecipe(provider, true, "primitive_void_ore_recipes",
                     PRIMITIVE_VOID_ORE.asStack(), "DCD", "CGC", "DCD",
@@ -143,6 +179,113 @@ public class Misc {
                 .inputFluids(Nitrogen.getFluid(5000))
                 .circuitMeta(1)
                 .outputItems(dust, EnderPearl, 10)
+                .save(provider);
+
+        ASSEMBLY_LINE_RECIPES.recipeBuilder("molecular_assembler_matrix")
+                .inputItems(frameGt, NaquadahAlloy, 16)
+                .inputItems(FIELD_GENERATOR_UV, 8)
+                .inputItems(ULTIMATE_BATTERY)
+                .inputItems(CustomTags.UHV_CIRCUITS, 16)
+                .inputItems(wireFine, RutheniumTriniumAmericiumNeutronate, 64)
+                .inputItems(wireFine, RutheniumTriniumAmericiumNeutronate, 64)
+                .inputItems(plate, AbyssalAlloy, 16)
+                .inputItems(EX_INTERFACE.asItem(), 8)
+                .inputItems(INGREDIENT_BUFFER.asItem(), 8)
+                .inputItems(EX_IO_PORT.asItem(), 8)
+                .inputItems(EX_PATTERN_PROVIDER.asItem(), 8)
+                .inputItems(EX_ASSEMBLER.asItem(), 8)
+                .inputFluids(MutatedLivingSolder.getFluid(2304))
+                .inputFluids(Highurabilityompoundteel.getFluid(1728))
+                .inputFluids(Antimatter.getFluid(4000))
+                .inputFluids(Polyetheretherketone.getFluid(2340))
+                .outputItems(AdditionalMultiBlockMachine.MOLECULAR_ASSEMBLER_MATRIX)
+                .EUt(VA[9]).duration(200)
+                .stationResearch((b) -> b.researchStack(EX_ASSEMBLER.asItem().getDefaultInstance())
+                        .dataStack(GTItems.TOOL_DATA_MODULE.asStack()).EUt(VA[9]).CWUt(256))
+                .save(provider);
+
+        ASSEMBLY_LINE_RECIPES.recipeBuilder("me_molecular_assembler_io")
+                .inputItems(frameGt, Neutronium, 16)
+                .inputItems(SENSOR_UV, 8)
+                .inputItems(EMITTER_UV, 8)
+                .inputItems(CustomTags.UHV_CIRCUITS, 4)
+                .inputItems(EX_INTERFACE.asItem(), 32)
+                .inputItems(INGREDIENT_BUFFER.asItem(), 32)
+                .inputItems(EX_IO_PORT.asItem(), 32)
+                .inputItems(QUANTUM_ENTANGLED_SINGULARITY.asItem(), 2)
+                .inputItems(QUANTUM_ENTANGLED_SINGULARITY.asItem(), 2)
+                .inputItems(SPATIAL_128_CELL_COMPONENT.asItem(), 16)
+                .inputFluids(MutatedLivingSolder.getFluid(1152))
+                .inputFluids(Naquadria.getFluid(1728))
+                .inputFluids(Plutonium241.getFluid(2340))
+                .inputFluids(Mithril.getFluid(2340))
+                .outputItems(GTLMachines.GTAEMachines.ME_MOLECULAR_ASSEMBLER_IO)
+                .EUt(VA[9]).duration(200)
+                .stationResearch((b) -> b.researchStack(EX_IO_PORT.asItem().getDefaultInstance())
+                        .dataStack(GTItems.TOOL_DATA_MODULE.asStack()).EUt(VA[9]).CWUt(128))
+                .save(provider);
+
+        ASSEMBLY_LINE_RECIPES.recipeBuilder("me_craft_speed_core")
+                .inputItems(GTMachines.WORLD_ACCELERATOR[UV], 2)
+                .inputItems(FLUID_REGULATOR_UV, 8)
+                .inputItems(CONVEYOR_MODULE_UV, 8)
+                .inputItems(Registries.getItemStack("kubejs:bioware_processing_core", 4))
+                .inputItems(SPEED_CARD.asItem(), 64)
+                .inputItems(SINGULARITY.asItem(), 64)
+                .inputItems(COLORED_LUMEN_PAINT_BALL.stack(AEColor.RED, 64))
+                .inputItems(COLORED_LUMEN_PAINT_BALL.stack(AEColor.RED, 64))
+                .inputItems(COLORED_LUMEN_PAINT_BALL.stack(AEColor.RED, 64))
+                .inputItems(COLORED_LUMEN_PAINT_BALL.stack(AEColor.RED, 64))
+                .inputFluids(MutatedLivingSolder.getFluid(1152))
+                .inputFluids(Nobelium.getFluid(1728))
+                .inputFluids(Orichalcum.getFluid(2340))
+                .inputFluids(Mithril.getFluid(2340))
+                .outputItems(GTLMachines.GTAEMachines.ME_CRAFT_SPEED_CORE)
+                .EUt(VA[9]).duration(200)
+                .stationResearch((b) -> b.researchStack(GTMachines.WORLD_ACCELERATOR[UV].asStack())
+                        .dataStack(GTItems.TOOL_DATA_MODULE.asStack()).EUt(VA[9]).CWUt(128))
+                .save(provider);
+
+        ASSEMBLY_LINE_RECIPES.recipeBuilder("me_craft_parallel_core")
+                .inputItems(ELECTRIC_MOTOR_UV, 16)
+                .inputItems(FIELD_GENERATOR_UV, 4)
+                .inputItems(Registries.getItemStack("kubejs:bioware_processing_core", 4))
+                .inputItems(EX_ASSEMBLER.asItem(), 64)
+                .inputItems(CRAFTING_CARD.asItem(), 64)
+                .inputItems(SINGULARITY.asItem(), 64)
+                .inputItems(COLORED_LUMEN_PAINT_BALL.stack(AEColor.PURPLE, 64))
+                .inputItems(COLORED_LUMEN_PAINT_BALL.stack(AEColor.PURPLE, 64))
+                .inputItems(COLORED_LUMEN_PAINT_BALL.stack(AEColor.PURPLE, 64))
+                .inputItems(COLORED_LUMEN_PAINT_BALL.stack(AEColor.PURPLE, 64))
+                .inputFluids(MutatedLivingSolder.getFluid(1152))
+                .inputFluids(Neptunium.getFluid(1728))
+                .inputFluids(Orichalcum.getFluid(2340))
+                .inputFluids(Mithril.getFluid(2340))
+                .outputItems(GTLMachines.GTAEMachines.ME_CRAFT_PARALLEL_CORE)
+                .EUt(VA[9]).duration(200)
+                .stationResearch((b) -> b.researchStack(AEBlocks.MOLECULAR_ASSEMBLER.stack())
+                        .dataStack(GTItems.TOOL_DATA_MODULE.asStack()).EUt(VA[9]).CWUt(128))
+                .save(provider);
+
+        ASSEMBLY_LINE_RECIPES.recipeBuilder("me_craft_pattern_container")
+                .inputItems(GTMachines.HULL[UV])
+                .inputItems(FIELD_GENERATOR_UV, 4)
+                .inputItems(CustomTags.UV_CIRCUITS)
+                .inputItems(EX_PATTERN_PROVIDER.asItem(), 64)
+                .inputItems(CAPACITY_CARD.asItem(), 64)
+                .inputItems(SINGULARITY.asItem(), 64)
+                .inputItems(COLORED_LUMEN_PAINT_BALL.stack(AEColor.BLUE, 64))
+                .inputItems(COLORED_LUMEN_PAINT_BALL.stack(AEColor.BLUE, 64))
+                .inputItems(COLORED_LUMEN_PAINT_BALL.stack(AEColor.BLUE, 64))
+                .inputItems(COLORED_LUMEN_PAINT_BALL.stack(AEColor.BLUE, 64))
+                .inputFluids(MutatedLivingSolder.getFluid(1152))
+                .inputFluids(Mendelevium.getFluid(1728))
+                .inputFluids(DamascusSteel.getFluid(2304))
+                .inputFluids(Titanium50.getFluid(2304))
+                .outputItems(GTLMachines.GTAEMachines.ME_CRAFT_PATTERN_CONTAINER)
+                .EUt(VA[9]).duration(200)
+                .stationResearch((b) -> b.researchStack(EX_PATTERN_PROVIDER.asItem().getDefaultInstance())
+                        .dataStack(GTItems.TOOL_DATA_MODULE.asStack()).EUt(VA[9]).CWUt(128))
                 .save(provider);
     }
 }

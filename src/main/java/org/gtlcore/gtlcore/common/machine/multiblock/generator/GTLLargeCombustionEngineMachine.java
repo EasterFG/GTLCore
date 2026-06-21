@@ -2,7 +2,6 @@ package org.gtlcore.gtlcore.common.machine.multiblock.generator;
 
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.capability.recipe.EURecipeCapability;
-import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.fluids.store.FluidStorageKeys;
 import com.gregtechceu.gtceu.api.gui.GuiTextures;
 import com.gregtechceu.gtceu.api.gui.fancy.TooltipsPanel;
@@ -36,6 +35,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 import javax.annotation.ParametersAreNonnullByDefault;
+
+import static org.gtlcore.gtlcore.api.recipe.RecipeRunnerHelper.*;
 
 /**
  * @author KilaBash
@@ -111,7 +112,7 @@ public class GTLLargeCombustionEngineMachine extends WorkableElectricMultiblockM
                                           @NotNull OCResult result) {
         if (machine instanceof GTLLargeCombustionEngineMachine engineMachine) {
             var EUt = RecipeHelper.getOutputEUt(recipe);
-            if (EUt > 0 && engineMachine.getLubricantRecipe().matchRecipe(engineMachine).isSuccess() &&
+            if (EUt > 0 && matchRecipe(engineMachine, engineMachine.getLubricantRecipe()) &&
                     !engineMachine.isIntakesObstructed()) {
                 var maxParallel = (int) (engineMachine.getOverclockVoltage() / EUt);
                 GTRecipe parallelResult = GTRecipeModifiers.fastParallel(engineMachine, recipe, maxParallel, false).getFirst();
@@ -133,7 +134,7 @@ public class GTLLargeCombustionEngineMachine extends WorkableElectricMultiblockM
         val totalContinuousRunningTime = recipeLogic.getTotalContinuousRunningTime();
         if ((totalContinuousRunningTime == 1 || totalContinuousRunningTime % 72 == 0)) {
             // insufficient lubricant
-            if (!getLubricantRecipe().handleRecipeIO(IO.IN, this, this.recipeLogic.getChanceCaches())) {
+            if (!handleRecipeInput(this, getLubricantRecipe())) {
                 recipeLogic.interruptRecipe();
                 return false;
             }
@@ -141,8 +142,7 @@ public class GTLLargeCombustionEngineMachine extends WorkableElectricMultiblockM
         // check boost fluid
         if ((totalContinuousRunningTime == 1 || totalContinuousRunningTime % 20 == 0) && isBoostAllowed()) {
             var boosterRecipe = getBoostRecipe();
-            this.isOxygenBoosted = boosterRecipe.matchRecipe(this).isSuccess() &&
-                    boosterRecipe.handleRecipeIO(IO.IN, this, this.recipeLogic.getChanceCaches());
+            this.isOxygenBoosted = matchRecipe(this, boosterRecipe) && handleRecipeInput(this, boosterRecipe);
         }
         return value;
     }

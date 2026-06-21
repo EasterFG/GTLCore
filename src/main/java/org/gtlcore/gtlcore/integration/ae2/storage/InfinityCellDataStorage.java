@@ -2,45 +2,50 @@ package org.gtlcore.gtlcore.integration.ae2.storage;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
 
 public class InfinityCellDataStorage {
 
-    public static final InfinityCellDataStorage EMPTY = new InfinityCellDataStorage();
+    public static final InfinityCellDataStorage EMPTY = new InfinityCellDataStorage(false);
+    public static final InfinityCellDataStorage FAST_EMPTY = new InfinityCellDataStorage(true);
 
     public ListTag stackKeys;
-    public long[] stackAmounts;
-    public long itemCount;
+    public ListTag amounts;
+    public double totalAmount;
+    public boolean isFastCell;
 
-    public InfinityCellDataStorage() {
+    public InfinityCellDataStorage(boolean isFastCell) {
         stackKeys = new ListTag();
-        stackAmounts = new long[0];
-        itemCount = 0;
+        amounts = new ListTag();
+        totalAmount = 0;
+        this.isFastCell = isFastCell;
     }
 
-    public InfinityCellDataStorage(ListTag stackKeys, long[] stackAmounts, long itemCount) {
+    public InfinityCellDataStorage(ListTag stackKeys, ListTag amounts, double totalAmount, boolean isFastCell) {
         this.stackKeys = stackKeys;
-        this.stackAmounts = stackAmounts;
-        this.itemCount = itemCount;
+        this.amounts = amounts;
+        this.totalAmount = totalAmount;
+        this.isFastCell = isFastCell;
     }
 
     public CompoundTag toNbt() {
         CompoundTag nbt = new CompoundTag();
+        nbt.putBoolean("isFastCell", isFastCell);
         nbt.put("keys", stackKeys);
-        nbt.putLongArray("amounts", stackAmounts);
-        if (itemCount != 0) {
-            nbt.putLong("count", itemCount);
+        nbt.put("amounts", amounts);
+        if (totalAmount != 0) {
+            nbt.putDouble("totalAmount", totalAmount);
         }
         return nbt;
     }
 
     public static InfinityCellDataStorage fromNbt(CompoundTag nbt) {
-        long itemCount = 0;
-        ListTag stackKeys = nbt.getList("keys", Tag.TAG_COMPOUND);
-        long[] stackAmounts = nbt.getLongArray("amounts");
-        if (nbt.contains("count")) {
-            itemCount = nbt.getLong("count");
+        double totalAmount = 0;
+        boolean isFastCell = nbt.getBoolean("isFastCell");
+        ListTag stackKeys = nbt.getList("keys", 10);
+        ListTag amounts = nbt.getList("amounts", isFastCell ? 12 : 8);
+        if (nbt.contains("totalAmount")) {
+            totalAmount = nbt.getDouble("totalAmount");
         }
-        return new InfinityCellDataStorage(stackKeys, stackAmounts, itemCount);
+        return new InfinityCellDataStorage(stackKeys, amounts, totalAmount, isFastCell);
     }
 }

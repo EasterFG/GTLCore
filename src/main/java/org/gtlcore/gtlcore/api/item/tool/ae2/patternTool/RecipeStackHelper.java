@@ -17,6 +17,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class RecipeStackHelper {
 
@@ -85,6 +86,13 @@ public class RecipeStackHelper {
 
     public static String getFluidTranslatedName(FluidStack fluidStack) {
         return fluidStack.getDisplayName().getString() + "(" + Objects.requireNonNull(ForgeRegistries.FLUIDS.getKey(fluidStack.getFluid())) + " " + fluidStack.getAmount() + ") ";
+    }
+
+    public static List<ItemStack> getOutputItems(GTRecipe recipe) {
+        return recipe.getOutputContents(ItemRecipeCapability.CAP).stream()
+                .map(content -> ItemRecipeCapability.CAP.of(content.getContent()))
+                .map(ingredient -> ingredient.getItems()[0])
+                .collect(Collectors.toList());
     }
 
     private static @NotNull Function<Content, FluidStack> getContentFluidStackFunction() {

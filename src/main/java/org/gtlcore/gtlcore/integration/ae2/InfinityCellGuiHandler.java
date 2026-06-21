@@ -15,7 +15,7 @@ public class InfinityCellGuiHandler implements ICellGuiHandler {
 
     @Override
     public boolean isSpecializedFor(ItemStack cell) {
-        return cell.getItem() instanceof InfinityCell;
+        return cell.getItem() instanceof InfinityCell || cell.getItem() instanceof FastInfinityCell;
     }
 
     @Override

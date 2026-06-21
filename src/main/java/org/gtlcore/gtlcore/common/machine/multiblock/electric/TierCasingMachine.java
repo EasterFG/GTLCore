@@ -1,16 +1,15 @@
 package org.gtlcore.gtlcore.common.machine.multiblock.electric;
 
+import org.gtlcore.gtlcore.api.recipe.RecipeResult;
+
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableElectricMultiblockMachine;
-import com.gregtechceu.gtceu.api.machine.multiblock.WorkableMultiblockMachine;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
-
-import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
-import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.network.chat.Component;
 
+import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -22,38 +21,33 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @MethodsReturnNonnullByDefault
 public class TierCasingMachine extends WorkableElectricMultiblockMachine {
 
-    public static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(
-            TierCasingMachine.class, WorkableMultiblockMachine.MANAGED_FIELD_HOLDER);
+    @Getter
+    protected final String tierType;
 
-    private final String tierType;
-
-    @Persisted
-    private int tier = 0;
+    @Getter
+    protected int casingTier = 0;
 
     public TierCasingMachine(IMachineBlockEntity holder, String tierType, Object... args) {
         super(holder, args);
         this.tierType = tierType;
     }
 
-    public int getCasingTier() {
-        return tier;
-    }
-
     @Override
     public void onStructureFormed() {
         super.onStructureFormed();
-        tier = getMultiblockState().getMatchContext().get(tierType);
+        casingTier = getMultiblockState().getMatchContext().get(tierType);
     }
 
     @Override
     public void onStructureInvalid() {
         super.onStructureInvalid();
-        tier = 0;
+        casingTier = 0;
     }
 
     @Override
     public boolean beforeWorking(@Nullable GTRecipe recipe) {
-        if (recipe != null && recipe.data.contains(tierType) && recipe.data.getInt(tierType) > tier) {
+        if (recipe != null && recipe.data.contains(tierType) && recipe.data.getInt(tierType) > casingTier) {
+            RecipeResult.of(this, RecipeResult.FAIL_NO_ENOUGH_TIER);
             getRecipeLogic().interruptRecipe();
             return false;
         }
@@ -64,11 +58,6 @@ public class TierCasingMachine extends WorkableElectricMultiblockMachine {
     public void addDisplayText(@NotNull List<Component> textList) {
         super.addDisplayText(textList);
         if (!this.isFormed) return;
-        textList.add(Component.translatable("gtceu.casings.tier", tier));
-    }
-
-    @Override
-    public @NotNull ManagedFieldHolder getFieldHolder() {
-        return MANAGED_FIELD_HOLDER;
+        textList.add(Component.translatable("gtceu.casings.tier", casingTier));
     }
 }

@@ -6,9 +6,11 @@ import org.gtlcore.gtlcore.utils.MachineIO;
 import com.gregtechceu.gtceu.api.machine.ConditionalSubscriptionHandler;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
+import com.gregtechceu.gtceu.api.machine.feature.IMachineLife;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.logic.OCParams;
 import com.gregtechceu.gtceu.api.recipe.logic.OCResult;
+import com.gregtechceu.gtceu.common.data.GTItems;
 import com.gregtechceu.gtceu.common.data.GTMaterials;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
 
@@ -16,9 +18,15 @@ import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
 import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 
 import com.hepdd.gtmthings.api.misc.WirelessEnergyManager;
@@ -33,7 +41,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-public class HarmonyMachine extends NoEnergyMultiblockMachine {
+public class HarmonyMachine extends NoEnergyMultiblockMachine implements IMachineLife {
 
     public static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(
             HarmonyMachine.class, NoEnergyMultiblockMachine.MANAGED_FIELD_HOLDER);
@@ -91,6 +99,13 @@ public class HarmonyMachine extends NoEnergyMultiblockMachine {
         StartupSubs.initialize(getLevel());
     }
 
+    @Override
+    public void onMachinePlaced(@Nullable LivingEntity player, ItemStack stack) {
+        if (player != null) {
+            this.userid = player.getUUID();
+        }
+    }
+
     @Nullable
     public static GTRecipe recipeModifier(MetaMachine machine, @NotNull GTRecipe recipe, @NotNull OCParams params,
                                           @NotNull OCResult result) {
@@ -115,6 +130,21 @@ public class HarmonyMachine extends NoEnergyMultiblockMachine {
     }
 
     @Override
+    public InteractionResult onUse(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+        if (player.getItemInHand(hand).is(GTItems.TOOL_DATA_STICK.asItem())) {
+            this.userid = player.getUUID();
+            if (isRemote()) {
+                player.sendSystemMessage(
+                        Component.translatable(
+                                "gtmthings.machine.wireless_energy_hatch.tooltip.bind",
+                                TeamUtil.GetName(player)));
+            }
+            return InteractionResult.sidedSuccess(isRemote());
+        }
+        return super.onUse(state, world, pos, player, hand, hit);
+    }
+
+    @Override
     public void addDisplayText(List<Component> textList) {
         super.addDisplayText(textList);
         if (this.isFormed()) {
@@ -124,9 +154,9 @@ public class HarmonyMachine extends NoEnergyMultiblockMachine {
                 textList.add(Component.translatable("gtmthings.machine.wireless_energy_monitor.tooltip.1",
                         FormattingUtil.formatNumbers(WirelessEnergyManager.getUserEU(userid))));
             }
-            textList.add(Component.literal("启动耗能：" + FormattingUtil.formatNumbers(getStartupEnergy()) + "EU"));
-            textList.add(Component.literal("氢储量：" + FormattingUtil.formatNumbers(hydrogen) + "mb"));
-            textList.add(Component.literal("氦储量：" + FormattingUtil.formatNumbers(helium) + "mb"));
+            textList.add(Component.translatable("tooltip.gtlcore.startup_energy_cost", FormattingUtil.formatNumbers(getStartupEnergy())));
+            textList.add(Component.translatable("tooltip.gtlcore.hydrogen_storage", FormattingUtil.formatNumbers(hydrogen)));
+            textList.add(Component.translatable("tooltip.gtlcore.helium_storage", FormattingUtil.formatNumbers(helium)));
         }
     }
 }

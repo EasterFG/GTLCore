@@ -1,61 +1,74 @@
 package org.gtlcore.gtlcore.common.machine.multiblock.electric;
 
+import org.gtlcore.gtlcore.api.recipe.RecipeResult;
 import org.gtlcore.gtlcore.common.data.GTLMaterials;
 
 import com.gregtechceu.gtceu.api.data.chemical.ChemicalHelper;
 import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
-import com.gregtechceu.gtceu.api.machine.ConditionalSubscriptionHandler;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableElectricMultiblockMachine;
+import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LightLayer;
+
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Objects;
 
 /**
  * @author EasterFG on 2024/12/2
  */
 public class SpaceProbeSurfaceReceptionMachine extends WorkableElectricMultiblockMachine {
 
-    protected ConditionalSubscriptionHandler checkSub;
-    private int time;
+    @Nullable
+    private BlockPos cachedCheckPos;
 
     public SpaceProbeSurfaceReceptionMachine(IMachineBlockEntity holder, Object... args) {
         super(holder, args);
-        checkSub = new ConditionalSubscriptionHandler(this, this::check, this::isFormed);
     }
 
     @Override
     public void onStructureFormed() {
         super.onStructureFormed();
-        checkSub.initialize(getLevel());
+        cachedCheckPos = findTopBlock();
     }
 
-    private void check() {
-        if (getOffsetTimer() % 20 == 0) {
-            time++;
-        }
+    @Override
+    public void onStructureInvalid() {
+        super.onStructureInvalid();
+        cachedCheckPos = null;
+    }
 
-        if (time < 30) {
-            return;
-        }
-        time = 0;
+    @Nullable
+    protected BlockPos findTopBlock() {
         Level level = getLevel();
+        if (level == null) return null;
+
         BlockPos pos = getPos();
-        BlockPos[] coordinates = new BlockPos[] { pos.offset(4, 8, 0), pos.offset(-4, 8, 0), pos.offset(0, 8, 4), pos.offset(0, 8, -4) };
-        for (BlockPos a : coordinates) {
-            if (level != null && level.getBlockState(a).is(ChemicalHelper.getBlock(TagPrefix.frameGt, GTLMaterials.BlackTitanium))) {
-                for (int i = -6; i < 7; i++) {
-                    for (int j = -6; j < 7; j++) {
-                        if (level.getBrightness(LightLayer.SKY, a.offset(0, 1, 0)) == 0) {
-                            getRecipeLogic().interruptRecipe();
-                            return;
-                        }
-                    }
-                }
-                return;
+        BlockPos[] coordinates = new BlockPos[] {
+                pos.offset(4, 8, 0),
+                pos.offset(-4, 8, 0),
+                pos.offset(0, 8, 4),
+                pos.offset(0, 8, -4)
+        };
+
+        for (BlockPos checkPos : coordinates) {
+            if (level.getBlockState(checkPos).is(ChemicalHelper.getBlock(TagPrefix.frameGt, GTLMaterials.BlackTitanium))) {
+                return checkPos.offset(0, 1, 0);
             }
         }
-        getRecipeLogic().interruptRecipe();
+        return null;
+    }
+
+    @Override
+    public boolean beforeWorking(@Nullable GTRecipe recipe) {
+        if (cachedCheckPos == null) return false;
+        if (!Objects.requireNonNull(getLevel()).canSeeSky(cachedCheckPos)) {
+            RecipeResult.of(this, RecipeResult.fail(Component.translatable("gtceu.recipe.fail.block")));
+            return false;
+        }
+        return super.beforeWorking(recipe);
     }
 }

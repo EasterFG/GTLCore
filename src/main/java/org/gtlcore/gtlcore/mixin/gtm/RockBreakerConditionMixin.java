@@ -1,5 +1,7 @@
 package org.gtlcore.gtlcore.mixin.gtm;
 
+import org.gtlcore.gtlcore.api.recipe.RecipeResult;
+
 import com.gregtechceu.gtceu.api.capability.recipe.FluidRecipeCapability;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableElectricMultiblockMachine;
@@ -38,6 +40,7 @@ public abstract class RockBreakerConditionMixin extends RecipeCondition {
                     if (tank.getFluidInTank(0).getFluid() == fluidA) hasFluidA = true;
                     if (tank.getFluidInTank(0).getFluid() == fluidB) hasFluidB = true;
                     if (hasFluidA && hasFluidB) return true;
+                    else RecipeResult.of(recipeLogic.machine, RecipeResult.FAIL_LACK_FLUID);
                 }
             }
         } else {
@@ -49,6 +52,7 @@ public abstract class RockBreakerConditionMixin extends RecipeCondition {
                     if (fluid.getType() == fluidA) hasFluidA = true;
                     if (fluid.getType() == fluidB) hasFluidB = true;
                     if (hasFluidA && hasFluidB) return true;
+                    else RecipeResult.of(recipeLogic.machine, RecipeResult.FAIL_LACK_FLUID);
                 }
             }
         }

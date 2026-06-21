@@ -1,6 +1,7 @@
 package org.gtlcore.gtlcore.common.data;
 
 import org.gtlcore.gtlcore.GTLCore;
+import org.gtlcore.gtlcore.common.block.BlockMap;
 import org.gtlcore.gtlcore.common.block.CleanroomFilterType;
 import org.gtlcore.gtlcore.common.block.CraftingUnitType;
 import org.gtlcore.gtlcore.common.block.GTLFusionCasingBlock;
@@ -40,13 +41,11 @@ import com.tterrag.registrate.util.entry.BlockEntry;
 import com.tterrag.registrate.util.nullness.NonNullBiConsumer;
 import com.tterrag.registrate.util.nullness.NonNullFunction;
 import com.tterrag.registrate.util.nullness.NonNullSupplier;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Supplier;
 
 import static com.gregtechceu.gtceu.common.data.GTBlocks.ALL_FUSION_CASINGS;
@@ -54,14 +53,11 @@ import static org.gtlcore.gtlcore.api.registries.GTLRegistration.REGISTRATE;
 
 public class GTLBlocks {
 
-    public static Map<Integer, Supplier<Block>> scmap = new HashMap<>();
-    public static Map<Integer, Supplier<ActiveBlock>> sepmmap = new HashMap<>();
-    public static Map<Integer, Supplier<Block>> calmap = new HashMap<>();
-
     public static void init() {
+        BlockMap.init();
         for (int i = 1; i < 15; i++) {
             GTLBlocks.createTierCasings("component_assembly_line_casing_" + GTValues.VN[i].toLowerCase(),
-                    GTLCore.id("block/casings/component_assembly_line/component_assembly_line_casing_" + GTValues.VN[i].toLowerCase()), calmap, i);
+                    GTLCore.id("block/casings/component_assembly_line/component_assembly_line_casing_" + GTValues.VN[i].toLowerCase()), BlockMap.calMap, i);
         }
     }
 
@@ -128,8 +124,7 @@ public class GTLBlocks {
     @SuppressWarnings("all")
     public static BlockEntry<ActiveBlock> createActiveCasing(String name, String baseModelPath) {
         return REGISTRATE.block(name, ActiveBlock::new)
-                .initialProperties(() -> Blocks.IRON_BLOCK)
-                .addLayer(() -> RenderType::cutoutMipped)
+                .initialProperties(() -> Blocks.IRON_BLOCK).addLayer(() -> RenderType::cutoutMipped)
                 .blockstate(GTModels.createActiveModel(GTLCore.id(baseModelPath)))
                 .tag(GTToolType.WRENCH.harvestTags.get(0), BlockTags.MINEABLE_WITH_PICKAXE)
                 .item(BlockItem::new)
@@ -140,7 +135,7 @@ public class GTLBlocks {
 
     @SuppressWarnings("all")
     public static BlockEntry<Block> createTierCasings(String name, ResourceLocation texture,
-                                                      Map<Integer, Supplier<Block>> map, int tier) {
+                                                      Int2ObjectMap<Supplier<?>> map, int tier) {
         BlockEntry<Block> Block = REGISTRATE.block(name, p -> (Block) new Block(p) {
 
             @Override
@@ -164,7 +159,7 @@ public class GTLBlocks {
 
     @SuppressWarnings("all")
     public static BlockEntry<ActiveBlock> createActiveTierCasing(String name, String baseModelPath,
-                                                                 Map<Integer, Supplier<ActiveBlock>> map, int tier) {
+                                                                 Int2ObjectMap<Supplier<?>> map, int tier) {
         BlockEntry<ActiveBlock> Block = REGISTRATE.block("%s".formatted(name), p -> (ActiveBlock) new ActiveBlock(p) {
 
             @Override
@@ -381,22 +376,22 @@ public class GTLBlocks {
             "block/variant/space_elevator_support");
 
     public static final BlockEntry<Block> STELLAR_CONTAINMENT_CASING = createTierCasings(
-            "stellar_containment_casing", GTLCore.id("block/stellar_containment_casing"), scmap, 1);
+            "stellar_containment_casing", GTLCore.id("block/stellar_containment_casing"), BlockMap.scMap, 1);
     public static final BlockEntry<Block> ADVANCED_STELLAR_CONTAINMENT_CASING = createTierCasings(
             "advanced_stellar_containment_casing", GTLCore.id("block/stellar_containment_casing"),
-            scmap, 2);
+            BlockMap.scMap, 2);
     public static final BlockEntry<Block> ULTIMATE_STELLAR_CONTAINMENT_CASING = createTierCasings(
             "ultimate_stellar_containment_casing", GTLCore.id("block/stellar_containment_casing"),
-            scmap, 3);
+            BlockMap.scMap, 3);
 
     public static final BlockEntry<ActiveBlock> POWER_MODULE = GTLBlocks.createActiveTierCasing("power_module",
-            "block/variant/power_module", sepmmap, 1);
+            "block/variant/power_module", BlockMap.sepmMap, 1);
     public static final BlockEntry<ActiveBlock> POWER_MODULE_2 = GTLBlocks.createActiveTierCasing("power_module_2",
-            "block/variant/power_module", sepmmap, 2);
+            "block/variant/power_module", BlockMap.sepmMap, 2);
     public static final BlockEntry<ActiveBlock> POWER_MODULE_3 = GTLBlocks.createActiveTierCasing("power_module_3",
-            "block/variant/power_module", sepmmap, 3);
+            "block/variant/power_module", BlockMap.sepmMap, 3);
     public static final BlockEntry<ActiveBlock> POWER_MODULE_4 = GTLBlocks.createActiveTierCasing("power_module_4",
-            "block/variant/power_module", sepmmap, 4);
+            "block/variant/power_module", BlockMap.sepmMap, 4);
     public static final BlockEntry<ActiveBlock> POWER_MODULE_5 = GTLBlocks.createActiveTierCasing("power_module_5",
-            "block/variant/power_module", sepmmap, 5);
+            "block/variant/power_module", BlockMap.sepmMap, 5);
 }

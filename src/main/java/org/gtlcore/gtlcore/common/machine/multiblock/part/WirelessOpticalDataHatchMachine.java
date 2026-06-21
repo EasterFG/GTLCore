@@ -1,6 +1,7 @@
 package org.gtlcore.gtlcore.common.machine.multiblock.part;
 
 import org.gtlcore.gtlcore.api.capability.BindCapability;
+import org.gtlcore.gtlcore.api.recipe.RecipeResult;
 
 import com.gregtechceu.gtceu.api.capability.IDataAccessHatch;
 import com.gregtechceu.gtceu.api.capability.IOpticalDataAccessHatch;
@@ -8,6 +9,7 @@ import com.gregtechceu.gtceu.api.capability.IWorkable;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.feature.IInteractedMachine;
+import com.gregtechceu.gtceu.api.machine.feature.IRecipeLogicMachine;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiController;
 import com.gregtechceu.gtceu.api.machine.multiblock.PartAbility;
 import com.gregtechceu.gtceu.api.machine.multiblock.part.MultiblockPartMachine;
@@ -97,9 +99,13 @@ public class WirelessOpticalDataHatchMachine extends MultiblockPartMachine imple
                 return isRecipeAvailable(dataAccesses, seen, recipe) || isRecipeAvailable(transmitters, seen, recipe);
             } else {
                 Level level = getLevel();
-                if (level == null || transmitterPos == null) return false;
+                if (level == null || transmitterPos == null) {
+                    RecipeResult.of((IRecipeLogicMachine) getControllers().get(0), RecipeResult.fail(Component.translatable("gtceu.machine.wireless_data_receiver_hatch.unbind")));
+                    return false;
+                }
                 if (MetaMachine.getMachine(level, transmitterPos) instanceof WirelessOpticalDataHatchMachine machine) {
-                    return machine.isRecipeAvailable(recipe, seen);
+                    if (machine.isRecipeAvailable(recipe, seen)) return true;
+                    else RecipeResult.of((IRecipeLogicMachine) getControllers().get(0), RecipeResult.FAIL_NO_FIND_RESEARCHED);
                 }
             }
         }
@@ -108,8 +114,8 @@ public class WirelessOpticalDataHatchMachine extends MultiblockPartMachine imple
 
     private static boolean isRecipeAvailable(@NotNull Iterable<? extends IDataAccessHatch> hatches, @NotNull Collection<IDataAccessHatch> seen, @NotNull GTRecipe recipe) {
         for (IDataAccessHatch hatch : hatches) {
-            if (seen.contains(hatch)) continue;
-            if (hatch.isRecipeAvailable(recipe, seen)) {
+            if (hatch.isCreative()) return true;
+            if (!seen.contains(hatch) && hatch.isRecipeAvailable(recipe, seen)) {
                 return true;
             }
         }

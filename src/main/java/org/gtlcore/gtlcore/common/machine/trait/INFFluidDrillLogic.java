@@ -3,12 +3,10 @@ package org.gtlcore.gtlcore.common.machine.trait;
 import org.gtlcore.gtlcore.common.machine.multiblock.electric.INFFluidDrillMachine;
 
 import com.gregtechceu.gtceu.api.GTValues;
-import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.data.worldgen.bedrockfluid.BedrockFluidVeinSavedData;
 import com.gregtechceu.gtceu.api.data.worldgen.bedrockfluid.FluidVeinWorldEntry;
 import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
-import com.gregtechceu.gtceu.api.recipe.content.ContentModifier;
 import com.gregtechceu.gtceu.data.recipe.builder.GTRecipeBuilder;
 
 import com.lowdragmc.lowdraglib.side.fluid.FluidHelper;
@@ -20,6 +18,8 @@ import net.minecraft.world.level.material.Fluid;
 
 import lombok.Getter;
 import org.jetbrains.annotations.Nullable;
+
+import static org.gtlcore.gtlcore.api.recipe.RecipeRunnerHelper.*;
 
 @Getter
 public class INFFluidDrillLogic extends RecipeLogic {
@@ -55,10 +55,7 @@ public class INFFluidDrillLogic extends RecipeLogic {
             }
             var match = getFluidDrillRecipe();
             if (match != null) {
-                var copied = match.copy(new ContentModifier(match.duration, 0));
-                if (match.matchRecipe(this.machine).isSuccess() && copied.matchTickRecipe(this.machine).isSuccess()) {
-                    setupRecipe(match);
-                }
+                setupRecipe(match);
             }
         }
     }
@@ -73,7 +70,7 @@ public class INFFluidDrillLogic extends RecipeLogic {
                     .outputFluids(FluidStack.create(veinFluid,
                             getFluidToProduce(data.getFluidVeinWorldEntry(getChunkX(), getChunkZ()))))
                     .buildRawRecipe();
-            if (recipe.matchRecipe(getMachine()).isSuccess() && recipe.matchTickRecipe(getMachine()).isSuccess()) {
+            if (matchRecipeOutput(getMachine(), recipe) && recipe.matchTickRecipe(getMachine()).isSuccess()) {
                 return recipe;
             }
         }
@@ -111,18 +108,12 @@ public class INFFluidDrillLogic extends RecipeLogic {
     @Override
     public void onRecipeFinish() {
         machine.afterWorking();
-        if (lastRecipe != null) {
-            lastRecipe.postWorking(this.machine);
-            lastRecipe.handleRecipeIO(IO.OUT, this.machine, this.chanceCaches);
-        }
+        if (lastRecipe != null) handleRecipeOutput(getMachine(), lastRecipe);
         // try it again
         var match = getFluidDrillRecipe();
         if (match != null) {
-            var copied = match.copy(new ContentModifier(match.duration, 0));
-            if (match.matchRecipe(this.machine).isSuccess() && copied.matchTickRecipe(this.machine).isSuccess()) {
-                setupRecipe(match);
-                return;
-            }
+            setupRecipe(match);
+            return;
         }
         setStatus(Status.IDLE);
         progress = 0;

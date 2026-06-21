@@ -1,94 +1,84 @@
 package org.gtlcore.gtlcore.common.machine.multiblock.electric;
 
-import org.gtlcore.gtlcore.common.data.GTLRecipeModifiers;
+import org.gtlcore.gtlcore.api.machine.multiblock.IModularMachineHost;
+import org.gtlcore.gtlcore.api.machine.multiblock.IModularMachineModule;
 
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
-import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableElectricMultiblockMachine;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
-import com.gregtechceu.gtceu.utils.FormattingUtil;
 
-import net.minecraft.ChatFormatting;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.level.Level;
 
+import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.Objects;
+import java.util.Set;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-public class SuprachronalAssemblyLineMachine extends WorkableElectricMultiblockMachine {
+public class SuprachronalAssemblyLineMachine extends WorkableElectricMultiblockMachine
+                                             implements IModularMachineHost<SuprachronalAssemblyLineMachine> {
 
-    private final boolean isModule;
+    private final Set<IModularMachineModule<SuprachronalAssemblyLineMachine, ?>> modules = new ReferenceOpenHashSet<>();
+    private int mam = 0;
 
-    private int module = 0;
-    private WorkableElectricMultiblockMachine machine = null;
-
-    public SuprachronalAssemblyLineMachine(IMachineBlockEntity holder, boolean isModule, Object... args) {
+    public SuprachronalAssemblyLineMachine(IMachineBlockEntity holder, Object... args) {
         super(holder, args);
-        this.isModule = isModule;
     }
 
-    private void getSuprachronalAssemblyLineModule() {
-        Level level = getLevel();
-        if (level != null) {
-            BlockPos pos = getPos();
-            module = 0;
-            BlockPos[] coordinates = new BlockPos[] { pos.offset(3, 0, 0),
-                    pos.offset(-3, 0, 0),
-                    pos.offset(0, 0, 3),
-                    pos.offset(0, 0, -3) };
-            for (BlockPos i : coordinates) {
-                MetaMachine metaMachine = MetaMachine.getMachine(level, i);
-                if (metaMachine != null && Objects.equals(metaMachine.getBlockState().getBlock().kjs$getId(), "gtceu:suprachronal_assembly_line_module") && ((WorkableElectricMultiblockMachine) metaMachine).isFormed()) {
-                    module++;
-                }
-            }
+    private int getMAM() {
+        if (getOffsetTimer() % 20 == 0) {
+            mam = getFormedModuleCount();
         }
+        return mam;
     }
 
-    private void getSuprachronalAssemblyLine() {
-        Level level = getLevel();
-        if (level != null) {
-            BlockPos pos = getPos();
-            BlockPos[] coordinates = new BlockPos[] { pos.offset(3, 0, 0),
-                    pos.offset(-3, 0, 0),
-                    pos.offset(0, 0, 3),
-                    pos.offset(0, 0, -3) };
-            for (BlockPos i : coordinates) {
-                MetaMachine metaMachine = MetaMachine.getMachine(level, i);
-                if (metaMachine != null && Objects.equals(metaMachine.getBlockState().getBlock().kjs$getId(), "gtceu:suprachronal_assembly_line") && ((WorkableElectricMultiblockMachine) metaMachine).isFormed()) {
-                    machine = (WorkableElectricMultiblockMachine) metaMachine;
-                }
-            }
-        }
+    @Override
+    public @NotNull Set<IModularMachineModule<SuprachronalAssemblyLineMachine, ?>> getModuleSet() {
+        return modules;
     }
 
-    public int getParallel() {
-        return GTLRecipeModifiers.getHatchParallel(machine);
+    @Override
+    public BlockPos[] getModuleScanPositions() {
+        final BlockPos pos = getPos();
+        return new BlockPos[] {
+                pos.offset(3, 0, 0),
+                pos.offset(-3, 0, 0),
+                pos.offset(0, 0, 3),
+                pos.offset(0, 0, -3)
+        };
+    }
+
+    @Override
+    public int getMaxModuleCount() {
+        return 2;  // 最多连接2个模块
+    }
+
+    @Override
+    public void onStructureFormed() {
+        super.onStructureFormed();
+        safeClearModules();
+        scanAndConnectModules();
+    }
+
+    @Override
+    public void onStructureInvalid() {
+        super.onStructureInvalid();
+        safeClearModules();
     }
 
     @Override
     public boolean onWorking() {
         boolean value = super.onWorking();
         if (getOffsetTimer() % 20 == 0) {
-            if (isModule) {
-                getSuprachronalAssemblyLine();
-                if (machine == null) {
-                    getRecipeLogic().setProgress(0);
-                }
-            } else {
-                getSuprachronalAssemblyLineModule();
-                if (module > 2) {
-                    getRecipeLogic().setProgress(0);
-                }
+            if (exceedsModuleLimit()) {
+                getRecipeLogic().setProgress(0);
             }
         }
         return value;
@@ -96,18 +86,9 @@ public class SuprachronalAssemblyLineMachine extends WorkableElectricMultiblockM
 
     @Override
     public boolean beforeWorking(@Nullable GTRecipe recipe) {
-        if (isModule) {
-            getSuprachronalAssemblyLine();
-            if (machine == null) {
-                getRecipeLogic().interruptRecipe();
-                return false;
-            }
-        } else {
-            getSuprachronalAssemblyLineModule();
-            if (module > 2) {
-                getRecipeLogic().interruptRecipe();
-                return false;
-            }
+        if (exceedsModuleLimit()) {
+            getRecipeLogic().interruptRecipe();
+            return false;
         }
         return super.beforeWorking(recipe);
     }
@@ -116,17 +97,6 @@ public class SuprachronalAssemblyLineMachine extends WorkableElectricMultiblockM
     public void addDisplayText(@NotNull List<Component> textList) {
         super.addDisplayText(textList);
         if (!this.isFormed) return;
-        if (isModule) {
-            if (getOffsetTimer() % 10 == 0) {
-                getSuprachronalAssemblyLine();
-            }
-            textList.add(Component.translatable("gtceu.multiblock.parallel", Component.literal(FormattingUtil.formatNumbers(getParallel())).withStyle(ChatFormatting.DARK_PURPLE)).withStyle(ChatFormatting.GRAY));
-            textList.add(Component.literal("该模块" + (machine != null ? "已" : "未") + "成功安装"));
-        } else {
-            if (getOffsetTimer() % 10 == 0) {
-                getSuprachronalAssemblyLineModule();
-            }
-            textList.add(Component.literal("已安装的模块数：" + module));
-        }
+        textList.add(Component.translatable("tooltip.gtlcore.installed_module_count", getMAM()));
     }
 }
